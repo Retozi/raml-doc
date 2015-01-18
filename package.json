@@ -1,0 +1,29 @@
+{
+  "name": "raml-doc",
+  "description": "A document generator for raml",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Reto Schläpfer",
+  "dependencies": {
+    "bootstrap": "3.3.x",
+    "react-router": "0.11.x",
+    "csonschema": "0.5.x",
+    "cson-safe": "1.0.x ",
+    "jsonschema": "1.0.x",
+    "browser-sync": "1.9.x",
+    "node-watch": "0.3.x",
+    "raml-parser": "0.8.x"
+  },
+  "devDependencies": {
+    "webpack": "1.4.x",
+    "webpack-dev-server": "1.7.x",
+    "script-loader": "0.6.x",
+    "style-loader": "0.8.x",
+    "url-loader": "0.5.x",
+    "jsx-loader": "0.12.x",
+    "css-loader": "0.9.x",
+    "stylus-loader": "0.5.x",
+    "react-hot-loader": "1.1.x",
+    "autoprefixer-loader": "1.0.x"
+  }
+}
