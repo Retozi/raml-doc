@@ -44,9 +44,14 @@ var Home = React.createClass({
 });
 
 function renderItem(r) {
-    return <ListItem caption={r.parentUrl + r.relativeUri} to={r.parentUrl + r.relativeUri}/>;
+    var uri = r.parentUrl + r.relativeUri;
+    return <ListItem
+            caption={uri}
+            to={uri}
+            key={uri}/>;
 }
 
+// traverse each group recursively to render a flat list of suburis
 function renderGroup(r) {
     var items = [renderItem(r)];
 
@@ -66,6 +71,7 @@ function renderGroup(r) {
 }
 
 var Nav = React.createClass({
+    // render the first level of the uri into seperate groups
     renderGroups() {
         if (this.props.raml) {
             return this.props.raml.resources.map(renderGroup);
