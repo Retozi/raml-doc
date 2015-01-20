@@ -1,0 +1,212 @@
+/account:
+    description: Metadata of the user-Account
+    get:
+        is: [secured]
+        securedBy: [sessionToken]
+        description: Get account metadata
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include account-get-200.json
+                        schema: !include account-get-200.cson
+
+    put:
+        is: [secured]
+        securedBy: [sessionToken]
+        displayName: Edit account metadata
+        description: |
+            ####Dev-Comments
+            @Reto:
+            - should this be protected by password instead of token?
+            - only send updates or the whole body?
+        body:
+            application/json:
+                example: !include account-put-body.json
+                schema: !include account-put-body.cson
+        responses:
+            204:
+                description: Succesfully updated user
+    post:
+        description: Create a new user
+        body:
+            application/json:
+              example: !include account-post-body.json
+              schema: !include account-post-body.cson
+        responses:
+            201:
+                description: Sucessfully created user
+            400:
+                description: User Creation has failed
+                body:
+                    application/json:
+                        example: !include account-post-400.json
+                        schema: |
+                            fieldErrors: [ 'FieldError' ]
+                            errors: [ 'Error' ]
+
+
+    delete:
+        displayName: Delete User
+        description: |
+            ####Dev-Comments
+            @Reto: should this be a delete method? delete methods with body
+            [are tricky](http://stackoverflow.com/questions/299628/is-an-entity-body-allowed-for-an-http-delete-request)
+
+        is: [secured]
+        securedBy: [sessionToken]
+        body:
+            application/json:
+                example: |
+                    {
+                        "password": "xyz"
+                    }
+                schema: |
+                    password: 'string'
+        responses:
+            204:
+                description: Succesfully deleted resource
+
+
+/password:
+    is: [secured]
+    securedBy: [sessionToken]
+    put:
+        description: "Changes password"
+        body:
+            application/json:
+                example: |
+                    {
+                        "oldPassword": "test1234",
+                        "newPassword": "VeRyS4ure1!"
+                    }
+                schema: |
+                    oldPassword: 'string'
+                    newPassword: 'string'
+        responses:
+            204:
+                description: Successfully changed password
+
+/logins:
+    is: [secured]
+    securedBy: [sessionToken]
+    description: Manage additional logins of an account
+    get:
+        description: Get all logins of the account
+    post:
+        description: Create new login
+
+
+/{loginId}:
+    is: [secured]
+    securedBy: [sessionToken]
+    delete:
+        description: Delete login
+    put:
+        description: Edit login
+
+    /password:
+        is: [secured]
+        securedBy: [sessionToken]
+        put:
+            description: Edit Password of a Login
+
+/balance:
+    is: [secured]
+    securedBy: [sessionToken]
+    description: money balance
+
+/reminders:
+    is: [secured]
+    securedBy: [sessionToken]
+    description: Manage reminders
+
+/badges:
+    is: [secured]
+    securedBy: [sessionToken]
+    get:
+        description: Get a list of all badges
+    post:
+        description: Order/Register new badge
+
+    /{badgeId}:
+        is: [secured]
+        securedBy: [sessionToken]
+        description: Manage a single badge
+        put:
+            description: Update badge
+        delete:
+            description: Delete badge
+
+
+/licence-plates:
+    is: [secured]
+    securedBy: [sessionToken]
+    description: Manage licence-plates
+    get:
+        description: Get a list of all licence-platess
+    post:
+        description: Order/Register a new licence-plate
+
+    /{licencePlateId}:
+        is: [secured]
+        securedBy: [sessionToken]
+        description: Manage a single licence-plate
+        put:
+            description: Update licence-plate
+        delete:
+            description: Delete licence-plate
+
+/permits:
+    description: manage the permits of a user
+    /badge:
+        description: badge permits
+        is: [secured]
+        securedBy: [sessionToken]
+        post:
+            description: Buy A new badge permit charged to the account
+        get:
+            description: Get active permits
+
+        /history:
+            is: [secured]
+            securedBy: [sessionToken]
+            get:
+                description: Get history of all purchased badge permits
+    /licence-plate:
+        is: [secured]
+        securedBy: [sessionToken]
+        description: licence-plate permits
+        post:
+            description: Buy A new licence-plate permit charged to the account
+        get:
+            description: Get active permits
+
+        /history:
+            is: [secured]
+            securedBy: [sessionToken]
+            get:
+                description: Get history of all purchased badge permits
+/transactions:
+    description: Manage user transactions
+    /badge:
+        description: badge transactions
+        is: [secured]
+        securedBy: [sessionToken]
+        get:
+            description: Active badge transactions
+        /history:
+            is: [secured]
+            securedBy: [sessionToken]
+            get:
+                description: Get a history of all transactions
+    /licence-plate:
+        description: licence-plate transactions
+        is: [secured]
+        securedBy: [sessionToken]
+        get:
+            description: Active licence-plate transactions
+        post:
+            description: start a new licence-plate transaction
+        patch:
+            description: stop a licence plate transaction

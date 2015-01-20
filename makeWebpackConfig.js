@@ -49,7 +49,8 @@ module.exports = function(type) {
             ],
         },
         node: {
-          fs: "empty"
+          fs: "empty",
+          path: "empty"
         },
         resolve: {
             extensions: ['', '.js', '.jsx']

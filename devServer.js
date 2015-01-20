@@ -2,6 +2,9 @@
 var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var config = require('./makeWebpackConfig')('dev');
+var watch = require("node-watch");
+var path = require("path");
+var express = require('express');
 
 var server = new WebpackDevServer(webpack(config), {
     // webpack-dev-server options
@@ -21,3 +24,16 @@ var server = new WebpackDevServer(webpack(config), {
 });
 
 server.listen(8080, "localhost", function() {});
+
+
+var ramlReloadServer = express().listen(8081);
+var io = require('socket.io').listen(ramlReloadServer);
+
+// wath for any changes and render raml
+watch('./assets', function(filename) {
+    var ext = path.extname(filename);
+    if (ext === '.raml') {
+        console.log("file changes");
+        io.emit("raml");
+    }
+});

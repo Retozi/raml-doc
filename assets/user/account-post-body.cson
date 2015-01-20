@@ -1,0 +1,22 @@
+licensePlateCountryId: 'integer'
+licensePlateGroupId: 'integer'
+licensePlate: 'string'
+sendParkingCardVignette: 'boolean'
+sendParkingCardBadge: 'boolean'
+
+salutationLine: 'string'
+lastname: 'string'
+firstname: 'string'
+email: 'string'
+# Address is required if either sendParkingCardVignette or
+# sendParkingCardBadge is true
+addressStreet: 'string'
+addressZipcode: 'string'
+addressCity: 'string'
+addressCountryId: 'integer'
+mobilePhone: 'string'
+correspondenceLanguageId: 'integer'
+
+password: 'string'
+
+$required: 'sendParkingCardBadge sendParkingCardVignette lastname firstname email password'

@@ -1,0 +1,32 @@
+{
+    "fieldErrors" : [
+        {
+            "code": 1234,
+            "message": {
+                "de": "Bitte geben Sie einen Namen an",
+                "fr": "[fr] Bitte geben Sie einen Namen an",
+                "it": "[it] Bitte geben Sie einen Namen an"
+            },
+            "fieldName": "name"
+        },
+        {
+            "code": 1235,
+            "message": {
+                "de": "Das Format der Nummer ist ungültig.",
+                "fr": "[fr] Das Format der Nummer ist ungültig.",
+                "it": "[it] Das Format der Nummer ist ungültig."
+            },
+            "fieldName": "mobilePhone"
+        }
+    ],
+    "errors": [
+        {
+            "code": 2345,
+            "message": {
+                "de": "Generelle Fehlermeldung ohne Bezug zu einem Feld",
+                "fr": "[fr] Generelle Fehlermeldung ohne Bezug zu einem Feld",
+                "it": "[it] Generelle Fehlermeldung ohne Bezug zu einem Feld"
+            }
+        }
+    ]
+}

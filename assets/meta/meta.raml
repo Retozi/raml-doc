@@ -1,0 +1,54 @@
+#%RAML 0.8
+description: metadata with translations of various entities
+/badge-types:
+    get:
+        description: all possible badge types
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include badge-types.json
+                        schema: |
+                            [
+                                {
+                                    id: 'integer',
+                                    name: 'MultiLangString'
+                                }
+                            ]
+/address-countries:
+    get:
+        description: List of countries that can be used in adresses
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include address-countries.json
+                        schema: |
+                            [
+                                {
+                                    id: 'integer',
+                                    isoCode: 'string',
+                                    name: 'MultiLangString'
+                                }
+                            ]
+
+
+/languages:
+    get:
+        description: List of correspondence languages
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: !include languages.json
+                        schema: |
+                            [
+                                {
+                                    id: 'integer',
+                                    name: 'MultiLangString'
+                                }
+                            ]
+
+/license-plate-countries:
+    get:
+        description: List of all possible license-plates countries

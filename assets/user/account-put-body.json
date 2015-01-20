@@ -1,0 +1,12 @@
+{
+    "salutationLine": "Herr",
+    "lastname": "Zimmermann",
+    "firstname": "Max",
+    "mobilePhone": "+41792345656",
+    "email": "mz@example.com",
+    "correspondenceLanguageId": 1234,
+    "addressStreet": "Bahnhofstrasse 4a",
+    "addressZipcode": "8152",
+    "addressCity": "Opfikon",
+    "addressCountryId": 1234
+}

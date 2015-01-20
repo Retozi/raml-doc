@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1234,
+        "name": {
+            "de": "Schweiz",
+            "fr": "Suisse",
+            "it": "Swizzera"
+        },
+        "isoCode": "CH",
+        "licensePlateGroups" : [
+            {
+                "id": 0,
+                "name": {
+                    "de": "Motorwagen",
+                    "fr": "Voiture automobile",
+                    "it": "Autovettura"
+                }
+            },
+            {
+                "id": 1,
+                "name": {
+                    "de": "Motorrad",
+                    "fr": "Motocycle",
+                    "it": "Motocicleta"
+                }
+            }
+        ]
+    }
+]

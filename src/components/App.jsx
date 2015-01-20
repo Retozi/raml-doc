@@ -3,6 +3,8 @@ var enrichRamlObj = require('../enrichRamlObj');
 var raml = require('raml-parser');
 var Nav = require('./Nav');
 var RouteHandler = require('react-router').RouteHandler;
+var socket = require('socket.io-client')('http://localhost:8081');
+var validateExamples = require('../validateExamples');
 
 var App = React.createClass({
     getInitialState() {
@@ -11,9 +13,13 @@ var App = React.createClass({
         };
     },
     componentDidMount() {
+        this.reloadRaml();
+        socket.on("raml", this.reloadRaml);
+    },
+    reloadRaml() {
         raml.loadFile(this.props.ramlPath).done((data) => {
             enrichRamlObj(data);
-            this.setState({raml: data});
+            this.setState({raml: data, validationErrors: validateExamples(data)});
         }, function(err) {
             console.log(err);
         });

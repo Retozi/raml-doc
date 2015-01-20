@@ -5,9 +5,10 @@ function enrich(ramlObj, parentUrl, allUriParameters) {
     }
     ramlObj.resources.forEach((r) => {
         r.parentUrl = parentUrl || '';
+        r.absUrl = r.parentUrl + r.relativeUri;
         r.allUriParameters = [].concat(allUriParameters || []);
         r.allUriParameters = r.allUriParameters.concat(r.uriParameters || []);
-        enrich(r, r.parentUrl + r.relativeUri, r.allUriParameters);
+        enrich(r, r.absUrl, r.allUriParameters);
     });
 }
 

@@ -1,4 +1,8 @@
+require('highlight.js/styles/default.css');
 var React = require('react');
+var hljs = require('highlight.js/lib/highlight');
+hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
+hljs.registerLanguage('json', require('highlight.js/lib/languages/coffeescript'));
 var State = require('react-router').State;
 var marked = require('marked');
 
@@ -32,7 +36,21 @@ var RamlState = {
 
 
 var Code = React.createClass({
-
+    componentDidMount() {
+        this.highlightCode();
+    },
+    componentDidUpdate() {
+        this.highlightCode();
+    },
+    highlightCode() {
+        var domNode = this.getDOMNode();
+        var nodes = domNode.querySelectorAll('pre code');
+        if (nodes.length > 0) {
+            for (var i = 0; i < nodes.length; i=i+1) {
+                hljs.highlightBlock(nodes[i]);
+          }
+        }
+    },
     render() {
         return (
             <pre>
@@ -81,7 +99,7 @@ var Schema = React.createClass({
         }
         return (
             <div>
-                <strong>Schema</strong>
+                <em>Schema</em>
                 <Code>
                     {this.props.schemaData}
                 </Code>
@@ -100,7 +118,7 @@ var Example = React.createClass({
         }
         return (
             <div>
-                <strong>Example</strong>
+                <em>Example</em>
                 <Code>
                     {this.props.exampleData}
                 </Code>
@@ -154,7 +172,7 @@ var Response = React.createClass({
         }
     },
     render() {
-        console.log(this.props.responseData);
+        //console.log(this.props.responseData);
         return (
             <div className="list-group-item">
                 <h4>{"Response: " + this.props.statusCode}</h4>
