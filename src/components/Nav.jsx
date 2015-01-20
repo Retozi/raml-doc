@@ -66,7 +66,7 @@ function renderGroup(r) {
     }
 
     traverse(r);
-    return <ListGroup>{items}</ListGroup>;
+    return <ListGroup key={r.parentUrl + r.relativeUri}>{items}</ListGroup>;
 
 }
 

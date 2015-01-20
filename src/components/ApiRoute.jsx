@@ -1,6 +1,6 @@
 var React = require('react');
 var State = require('react-router').State;
-var cx = React.addons.classSet;
+var marked = require('marked');
 
 // a mixin that provides convenient access to router state and raml obj state
 var RamlState = {
@@ -30,6 +30,22 @@ var RamlState = {
     },
 };
 
+
+var Code = React.createClass({
+
+    render() {
+        return (
+            <pre>
+                <code>
+                    {this.props.children}
+                </code>
+            </pre>
+        );
+    }
+});
+
+
+
 // a panel that you can close by clicking the header
 var Panel = React.createClass({
     propTypes: {
@@ -57,24 +73,94 @@ var Panel = React.createClass({
     }
 });
 
-
-// documents a Request
-var Request = React.createClass({
+var Schema = React.createClass({
 
     render() {
+        if (!this.props.schemaData) {
+            return null;
+        }
         return (
-            <div className="list-group-item"/>
+            <div>
+                <strong>Schema</strong>
+                <Code>
+                    {this.props.schemaData}
+                </Code>
+            </div>
         );
     }
 });
 
 
-// documents a response
-var Response = React.createClass({
+
+var Example = React.createClass({
 
     render() {
+        if (!this.props.exampleData) {
+            return null;
+        }
         return (
-            <div className="list-group-item"/>
+            <div>
+                <strong>Example</strong>
+                <Code>
+                    {this.props.exampleData}
+                </Code>
+            </div>
+        );
+    }
+});
+
+
+var Body = React.createClass({
+    render() {
+        if (!this.props.bodyData) {
+            return null;
+        }
+        var respFormats = Object.keys(this.props.bodyData);
+        if (respFormats > 1) {
+            console.warn("raml-doc does not support multiple response formats yet");
+        }
+        var body = this.props.bodyData[respFormats[0]];
+        return (
+            <div>
+                <strong>Body</strong>
+                <Example exampleData={body.example}/>
+                <Schema schemaData={body.schema}/>
+            </div>
+        );
+    }
+});
+
+
+var Request = React.createClass({
+    render() {
+        if (!this.props.requestData.body && !this.props.requestData.header) {
+            return null;
+        }
+        return (
+            <div className="list-group-item">
+                <h4>Request</h4>
+                <Body bodyData={this.props.requestData.body}/>
+            </div>
+        );
+    }
+});
+
+
+var Response = React.createClass({
+    renderDescription() {
+        var desc = this.props.responseData.description;
+        if (desc) {
+            return <div dangerouslySetInnerHTML={{__html: marked(desc)}}/>;
+        }
+    },
+    render() {
+        console.log(this.props.responseData);
+        return (
+            <div className="list-group-item">
+                <h4>{"Response: " + this.props.statusCode}</h4>
+                {this.renderDescription()}
+                <Body bodyData={this.props.body}/>
+            </div>
         );
     }
 });
@@ -82,14 +168,34 @@ var Response = React.createClass({
 
 // documents a single method (collapsible)
 var UriMethod = React.createClass({
+    renderDescription() {
+        var desc = this.props.methodData.description;
+        if (desc) {
+            //not dangerous since marked sanatizes html
+            return <div
+                    className="panel-body"
+                    dangerouslySetInnerHTML={{__html: marked(desc)}}/>;
+        }
+    },
+    renderResponses() {
+        var resp = this.props.methodData.responses;
+        if (resp) {
+            // responses is an object!
+            return Object.keys(resp).map((statusCode) => {
+                return <Response
+                        responseData={resp[statusCode]}
+                        statusCode={statusCode}
+                        key={statusCode}/>;
+            });
+        }
+    },
     render() {
         return (
             <Panel type="default" header={this.props.methodData.method}>
-                <div className="panel-body">
-                    test
-                </div>
+                {this.renderDescription()}
                 <div className="list-group">
-                    <Request/>
+                    <Request requestData={this.props.methodData}/>
+                    {this.renderResponses()}
                 </div>
             </Panel>
         );
@@ -105,18 +211,18 @@ var UriMethods = React.createClass({
         };
     },
     renderMethods() {
-        console.log(this.props.apiUriData.methods);
-        return this.props.apiUriData.methods.map((m) => {
+        return this.props.methodData.map((m) => {
             return <UriMethod
                     methodData={m}
                     open={this.state.expandedMethod === m.method}
                     key={m.method}
-                    />
-        })
+                    />;
+        });
     },
     render() {
-        if (!this.props.apiUriData.methods) {
-            return;
+        // some Uris don't have methods
+        if (!this.props.methodData) {
+            return null;
         }
         return (
             <div>
@@ -129,15 +235,12 @@ var UriMethods = React.createClass({
 
 var ApiRoute = React.createClass({
     mixins: [ State, RamlState],
-    // if we hit a Uris with no methods, it's a "group" and we display summary
-    // otherwise we display the doc of the Uris
     render() {
         var apiUriData = this.getRamlData(this.getActiveApiRoute());
-        console.log(apiUriData);
         return (
             <Panel type="default" header={apiUriData.parentUrl + apiUriData.relativeUri}>
                 <div className="panel-body">
-                    <UriMethods apiUriData={apiUriData} key={this.getActiveApiRoute()}/>
+                    <UriMethods methodData={apiUriData.methods} key={this.getActiveApiRoute()}/>
                 </div>
             </Panel>
         );
