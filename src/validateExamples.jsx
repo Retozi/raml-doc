@@ -2,6 +2,24 @@ var validateJson = require('jsonschema').validate;
 var csonschema = require('csonschema');
 var yaml = require('js-yaml');
 
+
+// return undefined if obj does not have valid key,value pairs
+function onlyContent(obj) {
+    if (!obj) {
+        return;
+    }
+    // remove empty keys
+    Object.keys(obj).forEach((k) => {
+        if (!obj[k]) {
+            delete obj[k];
+        }
+    });
+
+    if (Object.keys(obj).length > 0) {
+        return obj;
+    }
+}
+
 function processBody(body, customTypes) {
     var jsonSchema, json;
     if (!body) {
@@ -31,13 +49,9 @@ function processResponseBodies(responses, customTypes) {
     var responseExamples = {};
     Object.keys(responses).forEach(function(key) {
         var bodyExample = processBody(responses[key].body, customTypes);
-        if (bodyExample) {
-            responseExamples[key] = bodyExample;
-        }
+        responseExamples[key] = onlyContent(bodyExample);
     });
-    if (Object.keys(responseExamples).length > 0) {
-        return responseExamples;
-    }
+    return onlyContent(responseExamples);
 }
 
 function processMethods(methods, customTypes) {
@@ -46,22 +60,14 @@ function processMethods(methods, customTypes) {
     }
     var methodExamples = {};
     methods.forEach(function(m) {
-        var bodyExample = processBody(m.body, customTypes);
-        var resExamples = processResponseBodies(m.responses, customTypes);
-        var method = {};
-        if (bodyExample) {
-            method.req = bodyExample;
-        }
-        if (resExamples) {
-            method.res = resExamples;
-        }
-        if (Object.keys(method).length > 0) {
-            methodExamples[m.method] = method;
-        }
+        var method = {
+            req: processBody(m.body, customTypes),
+            res: processResponseBodies(m.responses, customTypes),
+
+        };
+        methodExamples[m.method] = onlyContent(method);
     });
-    if (Object.keys(methodExamples).length > 0) {
-        return methodExamples;
-    }
+    return onlyContent(methodExamples);
 }
 
 
@@ -77,14 +83,31 @@ function getExamples(resources, customTypes, obj) {
     });
 }
 
+function _flatten(obj, idArray, res) {
+    if (obj instanceof Array) {
+        res.push({id: idArray, errors: obj});
+    } else {
+        Object.keys(obj).forEach((k) => {
+            _flatten(obj[k], idArray.concat([k]), res);
+        });
+    }
+}
 
+function flattenErrors(errorsObj) {
+    var res = [];
+    _flatten(errorsObj, [], res);
+    return res;
+}
 
 function validateExamles(ramlObj) {
     var errors = {};
     var customTypes = yaml.safeLoad(ramlObj.schemas[0].customTypes);
     getExamples(ramlObj.resources, customTypes, errors);
 
-    return errors;
+    if (Object.keys(errors).length > 0) {
+        return flattenErrors(errors);
+    }
+    return null;
 }
 
 module.exports = validateExamles;

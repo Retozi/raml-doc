@@ -14,5 +14,6 @@
     "addressStreet": "Bahnhofstrasse 4a",
     "addressZipcode": "8152",
     "addressCity": "Opfikon",
-    "addressCountryId": 1234
+    "addressCountryId": 1234,
+    "accountTypeId": 1
 }

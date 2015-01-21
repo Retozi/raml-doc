@@ -5,11 +5,13 @@ var Nav = require('./Nav');
 var RouteHandler = require('react-router').RouteHandler;
 var socket = require('socket.io-client')('http://localhost:8081');
 var validateExamples = require('../validateExamples');
+var Errors = require('./Errors');
 
 var App = React.createClass({
     getInitialState() {
         return {
-            raml: null
+            raml: null,
+            errors: null
         };
     },
     componentDidMount() {
@@ -33,6 +35,7 @@ var App = React.createClass({
                 <div className="row">
                     <Nav raml={this.state.raml}/>
                     <div className="col-md-8">
+                        <Errors errors={this.state.validationErrors}/>
                         <RouteHandler raml={this.state.raml}/>
                     </div>
                 </div>

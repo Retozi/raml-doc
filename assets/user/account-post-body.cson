@@ -18,5 +18,6 @@ mobilePhone: 'string'
 correspondenceLanguageId: 'integer'
 
 password: 'string'
+accountTypeId: 'integer'
 
-$required: 'sendParkingCardBadge sendParkingCardVignette lastname firstname email password'
+$required: 'sendParkingCardBadge sendParkingCardVignette lastname firstname email password accountTypeId'

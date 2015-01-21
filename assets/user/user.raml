@@ -1,9 +1,16 @@
 /account:
-    description: Metadata of the user-Account
+    displayName: User Account
+    description: |
+        Metadata of the user-Account
+        * * *
+        ####Dev
+        The accountTypeId field seems to not be represented in the db-schema.
+        To account for the future "premium" functions, this should not be
+        handled with a boolean company flag
     get:
         is: [secured]
         securedBy: [sessionToken]
-        description: Get account metadata
+        displayName: Get account metadata
         responses:
             200:
                 body:
@@ -16,8 +23,8 @@
         securedBy: [sessionToken]
         displayName: Edit account metadata
         description: |
-            ####Dev-Comments
-            @Reto:
+            ####Dev
+            Reto:
             - should this be protected by password instead of token?
             - only send updates or the whole body?
         body:
@@ -28,7 +35,7 @@
             204:
                 description: Succesfully updated user
     post:
-        description: Create a new user
+        displayName: Create a new user
         body:
             application/json:
               example: !include account-post-body.json
@@ -47,10 +54,10 @@
 
 
     delete:
-        displayName: Delete User
+        displayName: Delete Account
         description: |
-            ####Dev-Comments
-            @Reto: should this be a delete method? delete methods with body
+            ####Dev
+            Reto: should this be a delete method? delete methods with body
             [are tricky](http://stackoverflow.com/questions/299628/is-an-entity-body-allowed-for-an-http-delete-request)
 
         is: [secured]
@@ -90,26 +97,52 @@
 /logins:
     is: [secured]
     securedBy: [sessionToken]
-    description: Manage additional logins of an account
+    description: |
+        Manage additional logins of an account
+        * * *
+        ####Dev
+        - roles must be defined.
+        - single name field enough?
+
     get:
         description: Get all logins of the account
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [
+                                {
+                                    "name": "Reto Schläpfer",
+                                    "email": "test@bla.ch",
+                                    "role": "restricted_user"
+                                }
+                            ]
+                        schema: |
+                            [
+                                {
+                                    name: 'string',
+                                    email: 'string',
+                                    role: 'string'
+                                }
+                            ]
     post:
         description: Create new login
 
 
-/{loginId}:
-    is: [secured]
-    securedBy: [sessionToken]
-    delete:
-        description: Delete login
-    put:
-        description: Edit login
-
-    /password:
+    /{loginId}:
         is: [secured]
         securedBy: [sessionToken]
+        delete:
+            description: Delete login
         put:
-            description: Edit Password of a Login
+            description: Edit login
+
+        /password:
+            is: [secured]
+            securedBy: [sessionToken]
+            put:
+                description: Edit Password of a Login
 
 /balance:
     is: [secured]

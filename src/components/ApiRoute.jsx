@@ -1,10 +1,21 @@
 require('highlight.js/styles/default.css');
 var React = require('react');
+
 var hljs = require('highlight.js/lib/highlight');
 hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
 hljs.registerLanguage('json', require('highlight.js/lib/languages/coffeescript'));
+
 var State = require('react-router').State;
 var marked = require('marked');
+var Panel = require('./Panel');
+
+// render a markdown description
+function renderDescription(desc) {
+    if (desc) {
+        return <div dangerouslySetInnerHTML={{__html: marked(desc)}}
+                style={{paddingBottom: 40, paddingTop: 20}}/>;
+    }
+}
 
 // a mixin that provides convenient access to router state and raml obj state
 var RamlState = {
@@ -63,34 +74,6 @@ var Code = React.createClass({
 });
 
 
-
-// a panel that you can close by clicking the header
-var Panel = React.createClass({
-    propTypes: {
-        type: React.PropTypes.oneOf(['default', 'primary', 'success', 'info', 'warning', 'danger']).isRequired,
-        header: React.PropTypes.string.isRequired,
-        closed: React.PropTypes.bool,
-        onToggle: React.PropTypes.func
-    },
-    getDefaultProps() {
-        return {
-            closed: false
-        };
-    },
-    render() {
-        return (
-            <div
-             className={"panel panel-" + this.props.type}
-             data-clickable={!!this.props.onToggle}
-             data-closed={this.props.closed}
-             onClick={this.props.onToggle}>
-                <div className="panel-heading">{this.props.header}</div>
-                {this.props.children}
-            </div>
-        );
-    }
-});
-
 var Schema = React.createClass({
 
     render() {
@@ -99,7 +82,7 @@ var Schema = React.createClass({
         }
         return (
             <div>
-                <em>Schema</em>
+                <em>Body schema</em>
                 <Code>
                     {this.props.schemaData}
                 </Code>
@@ -118,7 +101,7 @@ var Example = React.createClass({
         }
         return (
             <div>
-                <em>Example</em>
+                <em>Body example</em>
                 <Code>
                     {this.props.exampleData}
                 </Code>
@@ -140,7 +123,6 @@ var Body = React.createClass({
         var body = this.props.bodyData[respFormats[0]];
         return (
             <div>
-                <strong>Body</strong>
                 <Example exampleData={body.example}/>
                 <Schema schemaData={body.schema}/>
             </div>
@@ -165,24 +147,30 @@ var Request = React.createClass({
 
 
 var Response = React.createClass({
-    renderDescription() {
-        var desc = this.props.responseData.description;
-        if (desc) {
-            return <div dangerouslySetInnerHTML={{__html: marked(desc)}}/>;
-        }
-    },
     render() {
-        //console.log(this.props.responseData);
         return (
             <div className="list-group-item">
                 <h4>{"Response: " + this.props.statusCode}</h4>
-                {this.renderDescription()}
-                <Body bodyData={this.props.body}/>
+                {renderDescription(this.props.responseData.description)}
+                <Body bodyData={this.props.responseData.body}/>
             </div>
         );
     }
 });
 
+var BUTTON_CONTEXTS = {
+    get: 'primary',
+    post: 'success',
+    put: 'warning',
+    'delete': 'danger'
+};
+
+var METHOD_CONTEXTS = {
+    get: 'info',
+    post: 'success',
+    put: 'warning',
+    'delete': 'danger'
+};
 
 // documents a single method (collapsible)
 var UriMethod = React.createClass({
@@ -207,10 +195,26 @@ var UriMethod = React.createClass({
             });
         }
     },
+    renderHeader() {
+        var met = this.props.methodData.method;
+        return [
+            <div
+             className={`btn btn-${BUTTON_CONTEXTS[met]} btn-xs`}
+             style={{textTransform: "uppercase"}}>
+                {met}
+            </div>,
+            <code>{this.props.url}</code>,
+            <span style={{float: 'right'}}>{this.props.methodData.displayName}</span>
+        ];
+    },
     render() {
         return (
-            <Panel type="default" header={this.props.methodData.method}>
-                {this.renderDescription()}
+            <Panel
+             open={this.props.open}
+             onToggle={this.props.toggle}
+             type={METHOD_CONTEXTS[this.props.methodData.method]}
+             header={this.renderHeader()}>
+                {this.renderDescription(this.props.methodData.description)}
                 <div className="list-group">
                     <Request requestData={this.props.methodData}/>
                     {this.renderResponses()}
@@ -228,11 +232,20 @@ var UriMethods = React.createClass({
             expandedMethod: null
         };
     },
+    toggle(method) {
+        var newState = null;
+        if (method !== this.state.expandedMethod) {
+            newState = method;
+        }
+        this.setState({expandedMethod: newState});
+    },
     renderMethods() {
         return this.props.methodData.map((m) => {
             return <UriMethod
                     methodData={m}
+                    url={this.props.url}
                     open={this.state.expandedMethod === m.method}
+                    toggle={() => this.toggle(m.method)}
                     key={m.method}
                     />;
         });
@@ -256,9 +269,13 @@ var ApiRoute = React.createClass({
     render() {
         var apiUriData = this.getRamlData(this.getActiveApiRoute());
         return (
-            <Panel type="default" header={apiUriData.parentUrl + apiUriData.relativeUri}>
+            <Panel type="default" header={<h4>{apiUriData.absUrl}</h4>}>
                 <div className="panel-body">
-                    <UriMethods methodData={apiUriData.methods} key={this.getActiveApiRoute()}/>
+                    {renderDescription(apiUriData.description)}
+                    <UriMethods
+                     methodData={apiUriData.methods}
+                     url={apiUriData.absUrl}
+                     key={this.getActiveApiRoute()}/>
                 </div>
             </Panel>
         );

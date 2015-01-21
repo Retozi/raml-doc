@@ -25,7 +25,7 @@ var ListItem = React.createClass({
     render() {
         var cls = cx({"list-group-item": true, "heading": this.props.heading});
         return (
-            <Link className={cls} to={this.props.to}>
+            <Link className={cls} to={this.props.to} style={{paddingLeft: this.props.indent * 20}}>
                 {this.props.caption}
             </Link>
         );
@@ -44,14 +44,15 @@ var Home = React.createClass({
 });
 
 function renderItem(r) {
-    var uri = r.parentUrl + r.relativeUri;
+    var indent = r.absUrl.split('/').length - 1;
     return <ListItem
-            caption={uri}
-            to={uri}
-            key={uri}/>;
+            caption={r.displayName || r.relativeUri}
+            indent={indent}
+            to={r.absUrl}
+            key={r.absUrl}/>;
 }
 
-// traverse each group recursively to render a flat list of suburis
+// traverse each group recursively to render a flat list of sub-uris
 function renderGroup(r) {
     var items = [renderItem(r)];
 
@@ -66,7 +67,7 @@ function renderGroup(r) {
     }
 
     traverse(r);
-    return <ListGroup key={r.parentUrl + r.relativeUri}>{items}</ListGroup>;
+    return <ListGroup key={r.relativeUri}>{items}</ListGroup>;
 
 }
 
