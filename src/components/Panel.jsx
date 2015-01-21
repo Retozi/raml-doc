@@ -18,9 +18,13 @@ var Panel = React.createClass({
             <div
              className={"panel panel-" + this.props.type}
              data-clickable={!!this.props.onToggle}
-             data-closed={this.props.closed}
-             onClick={this.props.onToggle}>
-                <div className="panel-heading">{this.props.header}</div>
+             data-closed={this.props.closed}>
+                <div
+                 className="panel-heading"
+                 onClick={this.props.onToggle}
+                 style={{cursor: "pointer"}}>
+                    {this.props.header}
+                 </div>
                 {(this.props.open) ? this.props.children : null}
             </div>
         );

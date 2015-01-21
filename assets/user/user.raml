@@ -35,14 +35,14 @@
             204:
                 description: Succesfully updated user
     post:
-        displayName: Create a new user
+        displayName: Create a new Account
         body:
             application/json:
               example: !include account-post-body.json
               schema: !include account-post-body.cson
         responses:
             201:
-                description: Sucessfully created user
+                description: Successfully created user
             400:
                 description: User Creation has failed
                 body:
@@ -78,6 +78,7 @@
 /password:
     is: [secured]
     securedBy: [sessionToken]
+    displayName: Account Password
     put:
         description: "Changes password"
         body:
@@ -97,15 +98,16 @@
 /logins:
     is: [secured]
     securedBy: [sessionToken]
+    displayName: User Logins
     description: |
         Manage additional logins of an account
         * * *
         ####Dev
         - roles must be defined.
-        - single name field enough?
+        - single name field enough? Or even none?
 
     get:
-        description: Get all logins of the account
+        displayName: Get all logins of the account
         responses:
             200:
                 body:
@@ -127,22 +129,81 @@
                                 }
                             ]
     post:
-        description: Create new login
-
-
+        displayName: Create a new login
+        responses:
+            201:
+                body:
+                    application/json:
+                        example: |
+                            [
+                                {
+                                    "name": "Reto Schläpfer",
+                                    "email": "test@bla.ch",
+                                    "password": "pwd1234",
+                                    "role": "restricted_user"
+                                }
+                            ]
+                        schema: |
+                            [
+                                {
+                                    name: 'string',
+                                    email: 'string',
+                                    role: 'string',
+                                    password: 'string'
+                                }
+                            ]
     /{loginId}:
         is: [secured]
         securedBy: [sessionToken]
+        displayName: One Login
         delete:
             description: Delete login
+            responses:
+                204:
+                  description: Successfully deleted login
+
         put:
             description: Edit login
+            responses:
+                204:
+                    body:
+                        application/json:
+                            example: |
+                                [
+                                    {
+                                        "name": "Reto Schläpfer",
+                                        "email": "test@bla.ch",
+                                        "role": "restricted_user"
+                                    }
+                                ]
+                            schema: |
+                                [
+                                    {
+                                        name: 'string',
+                                        email: 'string',
+                                        role: 'string'
+                                    }
+                                ]
 
         /password:
             is: [secured]
             securedBy: [sessionToken]
+            displayName: Login Password
             put:
-                description: Edit Password of a Login
+                displayName: "Changes password of login"
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "oldPassword": "test1234",
+                                "newPassword": "VeRyS4ure1!"
+                            }
+                        schema: |
+                            oldPassword: 'string'
+                            newPassword: 'string'
+                responses:
+                    204:
+                        description: Successfully changed password
 
 /balance:
     is: [secured]
@@ -157,6 +218,7 @@
 /badges:
     is: [secured]
     securedBy: [sessionToken]
+    displayName: User Badges
     get:
         description: Get a list of all badges
     post:
@@ -172,28 +234,106 @@
             description: Delete badge
 
 
-/licence-plates:
+/license-plates:
     is: [secured]
     securedBy: [sessionToken]
-    description: Manage licence-plates
+    displayName: User License Plates
     get:
-        description: Get a list of all licence-platess
-    post:
-        description: Order/Register a new licence-plate
+        displayName: Get a list of all license plates
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [
+                                {
+                                    "licensePlateId": 12354,
+                                    "licensePlateNr": "ZH727222",
+                                    "vignetteNrs": [
+                                        "23492302349"
+                                    ],
+                                    "changeablePlate": false,
+                                    "licensePlateTypeId": 1,
+                                    "licensePlateCountryId": 3
+                                }
+                            ]
+                        schema: |
+                            [
+                                {
+                                    licensePlateId: 'integer',
+                                    licensePlateNr: 'string',
+                                    vignetteNrs: ['string'],
+                                    changeablePlate: 'boolean',
+                                    licensePlateTypeId: 'integer',
+                                    licensePlateCountryId: 'integer'
+                                }
+                            ]
 
-    /{licencePlateId}:
+    post:
+        displayName: Order/Register a new license plate
+        body:
+            application/json:
+                example: |
+                    {
+                        "licensePlateNr": "ZH727222",
+                        "vignetteNrs": [
+                            "23492302349"
+                        ],
+                        "changeablePlate": false,
+                        "licensePlateTypeId": 1,
+                        "licensePlateCountryId": 3
+                    }
+                schema: |
+                    licensePlateNr: 'string'
+                    vignetteNrs: ['string']
+                    changeablePlate: 'boolean'
+                    licensePlateTypeId: 'integer'
+                    licensePlateCountryId: 'integer'
+        responses:
+            201:
+                description: "Successfully created license plate"
+
+
+    /{licensePlateId}:
         is: [secured]
         securedBy: [sessionToken]
-        description: Manage a single licence-plate
+        displayName: One User License Plate
         put:
-            description: Update licence-plate
+            displayName: Update license plate
+            body:
+                application/json:
+                    example: |
+                        {
+                            "licensePlateNr": "ZH727222",
+                            "vignetteNrs": [
+                                "23492302349"
+                            ],
+                            "changeablePlate": false,
+                            "licensePlateTypeId": 1,
+                            "licensePlateCountryId": 3
+                        }
+                    schema: |
+                        licensePlateNr: 'string'
+                        vignetteNrs: ['string']
+                        changeablePlate: 'boolean'
+                        licensePlateTypeId: 'integer'
+                        licensePlateCountryId: 'integer'
+            responses:
+                204:
+                    description: Successfully updated license plate
         delete:
-            description: Delete licence-plate
+            displayName: Unlink license plate from user
+            description: |
+                ####Dev
+                Is delete smart here?
+            responses:
+                204:
+                    description: Successfully unlinke license plate
 
 /permits:
-    description: manage the permits of a user
+    displayName: Permits
     /badge:
-        description: badge permits
+        displayName: Badge-Permits
         is: [secured]
         securedBy: [sessionToken]
         post:
@@ -206,12 +346,12 @@
             securedBy: [sessionToken]
             get:
                 description: Get history of all purchased badge permits
-    /licence-plate:
+    /license-plate:
         is: [secured]
         securedBy: [sessionToken]
-        description: licence-plate permits
+        displayName: License-Plate-Permits
         post:
-            description: Buy A new licence-plate permit charged to the account
+            description: Buy A new license-plate permit charged to the account
         get:
             description: Get active permits
 
@@ -233,13 +373,13 @@
             securedBy: [sessionToken]
             get:
                 description: Get a history of all transactions
-    /licence-plate:
-        description: licence-plate transactions
+    /license-plate:
+        description: license-plate transactions
         is: [secured]
         securedBy: [sessionToken]
         get:
-            description: Active licence-plate transactions
+            description: Active license-plate transactions
         post:
-            description: start a new licence-plate transaction
+            description: start a new license-plate transaction
         patch:
-            description: stop a licence plate transaction
+            description: stop a license plate transaction

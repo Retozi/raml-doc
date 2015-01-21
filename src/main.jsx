@@ -1,3 +1,4 @@
+require("font-awesome/css/font-awesome.css");
 require("bootstrap/dist/css/bootstrap.min.css");
 var React = require('react');
 
