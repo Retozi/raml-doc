@@ -30,10 +30,10 @@ var Badge = React.createClass({
 
 
 var BADGES = {
-    'get': <Badge type="info" icon="arrow-down"/>,
-    'post': <Badge type="success" icon="plus"/>,
-    'put': <Badge type="warning" icon="pencil"/>,
-    'delete': <Badge type="danger" icon="times"/>
+    'get': <Badge type="info" icon="arrow-down" key="get"/>,
+    'post': <Badge type="success" icon="plus" key="post"/>,
+    'put': <Badge type="warning" icon="pencil"key="put"/>,
+    'delete': <Badge type="danger" icon="times" key="delete"/>
 };
 
 var ListItem = React.createClass({
@@ -56,7 +56,7 @@ var Home = React.createClass({
     render() {
         return (
             <ListGroup>
-                <Link className="list-group-item" to="/">Home</Link>
+                <Link className="list-group-item" to="/home">Home</Link>
             </ListGroup>
         );
     }
@@ -101,7 +101,7 @@ var Nav = React.createClass({
     },
     render() {
         return (
-            <div className="col-md-4">
+            <div className="col-md-4" style={{paddingTop: 40, paddingRight: 30}}>
                 <Home/>
                 {this.renderGroups()}
             </div>

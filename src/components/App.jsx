@@ -7,6 +7,7 @@ var socket = require('socket.io-client')('http://localhost:8081');
 var validateExamples = require('../validateExamples');
 var Errors = require('./Errors');
 
+
 var App = React.createClass({
     getInitialState() {
         return {
@@ -35,6 +36,12 @@ var App = React.createClass({
                 <div className="row">
                     <Nav raml={this.state.raml}/>
                     <div className="col-md-8">
+                        <div className="page-header">
+                            <h1>
+                                {this.state.raml.title}
+                                <small> version {this.state.raml.version}</small>
+                            </h1>
+                        </div>
                         <Errors errors={this.state.validationErrors}/>
                         <RouteHandler raml={this.state.raml}/>
                     </div>

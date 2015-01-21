@@ -227,7 +227,7 @@
     /{badgeId}:
         is: [secured]
         securedBy: [sessionToken]
-        description: Manage a single badge
+        displayName: One User Badge
         put:
             description: Update badge
         delete:
@@ -328,7 +328,7 @@
                 Is delete smart here?
             responses:
                 204:
-                    description: Successfully unlinke license plate
+                    description: Successfully unlink license plate
 
 /permits:
     displayName: Permits

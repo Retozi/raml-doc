@@ -6,16 +6,8 @@ hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
 hljs.registerLanguage('json', require('highlight.js/lib/languages/coffeescript'));
 
 var State = require('react-router').State;
-var marked = require('marked');
 var Panel = require('./Panel');
-
-// render a markdown description
-function renderDescription(desc) {
-    if (desc) {
-        return <div dangerouslySetInnerHTML={{__html: marked(desc)}}
-                style={{paddingBottom: 40, paddingTop: 20}}/>;
-    }
-}
+var Description = require('./Description');
 
 // a mixin that provides convenient access to router state and raml obj state
 var RamlState = {
@@ -133,13 +125,13 @@ var Body = React.createClass({
 
 var Request = React.createClass({
     render() {
-        if (!this.props.requestData.body && !this.props.requestData.header) {
+        if (!this.props.body && !this.props.header) {
             return null;
         }
         return (
             <div className="list-group-item">
                 <h4>Request</h4>
-                <Body bodyData={this.props.requestData.body}/>
+                <Body bodyData={this.props.body}/>
             </div>
         );
     }
@@ -151,8 +143,8 @@ var Response = React.createClass({
         return (
             <div className="list-group-item">
                 <h4>{"Response: " + this.props.statusCode}</h4>
-                {renderDescription(this.props.responseData.description)}
-                <Body bodyData={this.props.responseData.body}/>
+                <Description md={this.props.description}/>
+                <Body bodyData={this.props.body}/>
             </div>
         );
     }
@@ -174,22 +166,13 @@ var METHOD_CONTEXTS = {
 
 // documents a single method (collapsible)
 var UriMethod = React.createClass({
-    renderDescription() {
-        var desc = this.props.methodData.description;
-        if (desc) {
-            //not dangerous since marked sanatizes html
-            return <div
-                    className="panel-body"
-                    dangerouslySetInnerHTML={{__html: marked(desc)}}/>;
-        }
-    },
     renderResponses() {
         var resp = this.props.methodData.responses;
         if (resp) {
             // responses is an object!
             return Object.keys(resp).map((statusCode) => {
                 return <Response
-                        responseData={resp[statusCode]}
+                        {...resp[statusCode]}
                         statusCode={statusCode}
                         key={statusCode}/>;
             });
@@ -200,11 +183,12 @@ var UriMethod = React.createClass({
         return [
             <div
              className={`btn btn-${BUTTON_CONTEXTS[met]} btn-xs`}
-             style={{textTransform: "uppercase"}}>
+             style={{textTransform: "uppercase"}}
+             key="button">
                 {met}
             </div>,
-            <code>{this.props.url}</code>,
-            <span style={{float: 'right'}}>{this.props.methodData.displayName}</span>
+            <code key="code">{this.props.url}</code>,
+            <span key="name" style={{float: 'right'}}>{this.props.methodData.displayName}</span>
         ];
     },
     render() {
@@ -214,9 +198,12 @@ var UriMethod = React.createClass({
              onToggle={this.props.toggle}
              type={METHOD_CONTEXTS[this.props.methodData.method]}
              header={this.renderHeader()}>
-                {this.renderDescription(this.props.methodData.description)}
-                <div className="list-group">
-                    <Request requestData={this.props.methodData}/>
+                <Description
+                 className="panel-body"
+                 md={this.props.methodData.description}
+                 key="desc"/>
+                <div className="list-group" key="list-group">
+                    <Request {...this.props.methodData} key="req"/>
                     {this.renderResponses()}
                 </div>
             </Panel>
@@ -268,10 +255,13 @@ var ApiRoute = React.createClass({
     mixins: [ State, RamlState],
     render() {
         var apiUriData = this.getRamlData(this.getActiveApiRoute());
+        if (!apiUriData) {
+            return null;
+        }
         return (
             <Panel type="default" header={<h4>{apiUriData.absUrl}</h4>}>
                 <div className="panel-body">
-                    {renderDescription(apiUriData.description)}
+                    <Description md={apiUriData.description}/>
                     <UriMethods
                      methodData={apiUriData.methods}
                      url={apiUriData.absUrl}
