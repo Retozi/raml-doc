@@ -75,26 +75,6 @@
                 description: Succesfully deleted resource
 
 
-/password:
-    is: [secured]
-    securedBy: [sessionToken]
-    displayName: Account Password
-    put:
-        description: "Changes password"
-        body:
-            application/json:
-                example: |
-                    {
-                        "oldPassword": "test1234",
-                        "newPassword": "VeRyS4ure1!"
-                    }
-                schema: |
-                    oldPassword: 'string'
-                    newPassword: 'string'
-        responses:
-            204:
-                description: Successfully changed password
-
 /logins:
     is: [secured]
     securedBy: [sessionToken]
@@ -330,56 +310,37 @@
                 204:
                     description: Successfully unlink license plate
 
-/permits:
-    displayName: Permits
-    /badge:
-        displayName: Badge-Permits
-        is: [secured]
-        securedBy: [sessionToken]
-        post:
-            description: Buy A new badge permit charged to the account
-        get:
-            description: Get active permits
+/badge-permits:
+    displayName: Badge-Permits
+    is: [secured]
+    securedBy: [sessionToken]
+    post:
+        description: Buy A new badge permit charged to the account
+    get:
+        description: Get permits
 
-        /history:
-            is: [secured]
-            securedBy: [sessionToken]
-            get:
-                description: Get history of all purchased badge permits
-    /license-plate:
-        is: [secured]
-        securedBy: [sessionToken]
-        displayName: License-Plate-Permits
-        post:
-            description: Buy A new license-plate permit charged to the account
-        get:
-            description: Get active permits
+/license-plate-permits:
+    is: [secured]
+    securedBy: [sessionToken]
+    displayName: License Plate Permits
+    post:
+        description: Buy A new license-plate permit charged to the account
+    get:
+        description: Get permits
 
-        /history:
-            is: [secured]
-            securedBy: [sessionToken]
-            get:
-                description: Get history of all purchased badge permits
-/transactions:
-    description: Manage user transactions
-    /badge:
-        description: badge transactions
-        is: [secured]
-        securedBy: [sessionToken]
-        get:
-            description: Active badge transactions
-        /history:
-            is: [secured]
-            securedBy: [sessionToken]
-            get:
-                description: Get a history of all transactions
-    /license-plate:
-        description: license-plate transactions
-        is: [secured]
-        securedBy: [sessionToken]
-        get:
-            description: Active license-plate transactions
-        post:
-            description: start a new license-plate transaction
-        patch:
-            description: stop a license plate transaction
+/badge-transactions:
+    displayName: badge Transactions
+    is: [secured]
+    securedBy: [sessionToken]
+    get:
+        description: Active badge transactions
+/license-plate-transactions:
+    displayName: License Plate Transactions
+    is: [secured]
+    securedBy: [sessionToken]
+    get:
+        description: Active license-plate transactions
+    post:
+        description: start a new license-plate transaction
+    patch:
+        description: stop a license plate transaction
