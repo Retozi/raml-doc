@@ -99,9 +99,19 @@ function flattenErrors(errorsObj) {
     return res;
 }
 
+function extractCustomTypes(schemas) {
+    var types = {};
+    schemas.forEach((s) => {
+        Object.keys(s).forEach((t) => {
+            types[t] = yaml.safeLoad(s[t]);
+        });
+    });
+    return types;
+}
+
 function validateExamles(ramlObj) {
     var errors = {};
-    var customTypes = yaml.safeLoad(ramlObj.schemas[0].customTypes);
+    var customTypes = extractCustomTypes(ramlObj.schemas);
     getExamples(ramlObj.resources, customTypes, errors);
 
     if (Object.keys(errors).length > 0) {

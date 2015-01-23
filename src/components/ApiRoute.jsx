@@ -1,13 +1,23 @@
 require('highlight.js/styles/default.css');
 var React = require('react');
 
-var hljs = require('highlight.js/lib/highlight');
-hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
-hljs.registerLanguage('json', require('highlight.js/lib/languages/coffeescript'));
-
 var State = require('react-router').State;
 var Panel = require('./Panel');
 var Description = require('./Description');
+var Code = require('./Code');
+
+
+var SubSection = React.createClass({
+
+    render() {
+        return (
+            <section style={{paddingLeft: 20}}>
+                {this.props.children}
+            </section>
+        );
+    }
+});
+
 
 // a mixin that provides convenient access to router state and raml obj state
 var RamlState = {
@@ -22,10 +32,9 @@ var RamlState = {
     getRamlData(route) {
         var res;
         function _traverse(r) {
-            var fullPath = r.parentUrl + r.relativeUri;
             if (res) {
                 return;
-            } else if (fullPath === route) {
+            } else if (r.absUrl === route) {
                 res = r;
             } else if (r.resources) {
                 r.resources.forEach(_traverse);
@@ -38,33 +47,6 @@ var RamlState = {
 };
 
 
-var Code = React.createClass({
-    componentDidMount() {
-        this.highlightCode();
-    },
-    componentDidUpdate() {
-        this.highlightCode();
-    },
-    highlightCode() {
-        var domNode = this.getDOMNode();
-        var nodes = domNode.querySelectorAll('pre code');
-        if (nodes.length > 0) {
-            for (var i = 0; i < nodes.length; i=i+1) {
-                hljs.highlightBlock(nodes[i]);
-          }
-        }
-    },
-    render() {
-        return (
-            <pre>
-                <code>
-                    {this.props.children}
-                </code>
-            </pre>
-        );
-    }
-});
-
 
 var Schema = React.createClass({
 
@@ -74,7 +56,7 @@ var Schema = React.createClass({
         }
         return (
             <div>
-                <em>Body schema</em>
+                <em>Schema</em>
                 <Code>
                     {this.props.schemaData}
                 </Code>
@@ -93,7 +75,7 @@ var Example = React.createClass({
         }
         return (
             <div>
-                <em>Body example</em>
+                <em>Example</em>
                 <Code>
                     {this.props.exampleData}
                 </Code>
@@ -115,9 +97,48 @@ var Body = React.createClass({
         var body = this.props.bodyData[respFormats[0]];
         return (
             <div>
+                <h4>Body</h4>
                 <Example exampleData={body.example}/>
                 <Schema schemaData={body.schema}/>
             </div>
+        );
+    }
+});
+
+
+var HeaderAttributeDescription = React.createClass({
+    render() {
+        var p = this.props;
+        return <dd>
+            {p.type && <code>{p.type}</code>}
+            {p.required && " (required)"}
+            {p.description && <p>{p.description}</p>}
+            {p.example && <p className="text-muted">{"Example: " + p.example}</p>}
+        </dd>;
+    }
+});
+
+var Headers = React.createClass({
+    renderHeaderItem() {
+        var res = [];
+        Object.keys(this.props.headers).forEach((h) => {
+            var v = this.props.headers[h];
+            res.push(<dt style={{fontWeight: 'normal', fontStyle: 'italic'}}>{v.displayName || h}</dt>);
+            res.push(<HeaderAttributeDescription {...v}/>);
+        });
+        return res;
+    },
+    render() {
+        if (!this.props.headers) {
+            return null;
+        }
+        return (
+            <section>
+                <h4>Headers</h4>
+                <div className="dl-horizontal">
+                    {this.renderHeaderItem()}
+                </div>
+            </section>
         );
     }
 });
@@ -128,10 +149,14 @@ var Request = React.createClass({
         if (!this.props.body && !this.props.header) {
             return null;
         }
+        console.log(this.props.headers);
         return (
             <div className="list-group-item">
-                <h4>Request</h4>
-                <Body bodyData={this.props.body}/>
+                <h3>Request</h3>
+                <SubSection>
+                    <Headers headers={this.props.headers}/>
+                    <Body bodyData={this.props.body}/>
+                </SubSection>
             </div>
         );
     }
@@ -140,15 +165,47 @@ var Request = React.createClass({
 
 var Response = React.createClass({
     render() {
+        var desc = this.props.description;
         return (
-            <div className="list-group-item">
-                <h4>{"Response: " + this.props.statusCode}</h4>
-                <Description md={this.props.description}/>
-                <Body bodyData={this.props.body}/>
+            <div>
+                    <span>
+                        <code style={{fontSize: 18, marginRight: 5}}>
+                            {this.props.statusCode}
+                        </code>
+                        <span>{desc}</span>
+                    </span>
+                <SubSection>
+                    <Body bodyData={this.props.body}/>
+                </SubSection>
             </div>
         );
     }
 });
+
+
+var Responses = React.createClass({
+    renderResponses() {
+        var resp = this.props.responses;
+        if (resp) {
+            // responses is an object!
+            return Object.keys(resp).map((statusCode) => {
+                return <Response
+                        {...resp[statusCode]}
+                        statusCode={statusCode}
+                        key={statusCode}/>;
+            });
+        }
+    },
+    render() {
+        return (
+            <div className="list-group-item">
+                <h3>Responses</h3>
+                {this.renderResponses()}
+            </div>
+        );
+    }
+});
+
 
 var BUTTON_CONTEXTS = {
     get: 'primary',
@@ -166,18 +223,6 @@ var METHOD_CONTEXTS = {
 
 // documents a single method (collapsible)
 var UriMethod = React.createClass({
-    renderResponses() {
-        var resp = this.props.methodData.responses;
-        if (resp) {
-            // responses is an object!
-            return Object.keys(resp).map((statusCode) => {
-                return <Response
-                        {...resp[statusCode]}
-                        statusCode={statusCode}
-                        key={statusCode}/>;
-            });
-        }
-    },
     renderHeader() {
         var met = this.props.methodData.method;
         return [
@@ -187,8 +232,10 @@ var UriMethod = React.createClass({
              key="button">
                 {met}
             </div>,
-            <code key="code">{this.props.url}</code>,
-            <span key="name" style={{float: 'right'}}>{this.props.methodData.displayName}</span>
+            <code key="code" style={{marginLeft: 5}}>{this.props.url}</code>,
+            <span key="name" style={{float: 'right'}}>
+                {this.props.methodData.displayName}
+            </span>
         ];
     },
     render() {
@@ -204,7 +251,7 @@ var UriMethod = React.createClass({
                  key="desc"/>
                 <div className="list-group" key="list-group">
                     <Request {...this.props.methodData} key="req"/>
-                    {this.renderResponses()}
+                    <Responses responses={this.props.methodData.responses}/>
                 </div>
             </Panel>
         );
@@ -259,7 +306,7 @@ var ApiRoute = React.createClass({
             return null;
         }
         return (
-            <Panel type="default" header={<h4>{apiUriData.absUrl}</h4>}>
+            <Panel type="default" header={<h4>{apiUriData.displayName || apiUriData.absUrl}</h4>}>
                 <div className="panel-body">
                     <Description md={apiUriData.description}/>
                     <UriMethods

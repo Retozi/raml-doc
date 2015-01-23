@@ -31,7 +31,7 @@ traits:
     - secured:
         headers:
             Cookie:
-                description: JSESSIONID
+                example: 68a5sdf67jvbza3jie3
                 required: true
                 type: string
         responses:
@@ -39,7 +39,28 @@ traits:
                 description: Session id not valid or expired
 
 schemas:
-    - customTypes: !include ./customTypes.cson
+    - MultiLangString: |
+        # a translated string
+        de: 'string'
+        fr: 'string'
+        it: 'string'
+
+      Error: |
+        # a generic error
+        code: 'integer'
+        message:
+            de: 'string'
+            fr: 'string'
+            it: 'string'
+
+      FieldError: |
+        # an error regarding a certain field
+        code: 'integer'
+        fieldName: 'string'
+        message:
+            de: 'string'
+            fr: 'string'
+            it: 'string'
 
 
 /user: !include ./user/user.raml

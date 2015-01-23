@@ -66,7 +66,7 @@ function renderItem(r) {
     var indent = r.absUrl.split('/').length - 1;
     var methods = r.methods ? r.methods.map((m) => m.method) : [];
     return <ListItem
-            caption={r.displayName || r.relativeUri}
+            caption={r.relativeUri}
             methods={methods}
             indent={indent}
             to={r.absUrl}

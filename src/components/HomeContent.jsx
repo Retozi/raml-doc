@@ -1,14 +1,31 @@
 var React = require('react');
 var Description = require('./Description');
+var Code = require('./Code');
 
 var HomeContent = React.createClass({
     renderDescriptions() {
         return this.props.raml.documentation.map((d, i) => {
-            return <div style={{marginBottom: 40}}>
+            return <section>
                 <h2>{d.title}</h2>
                 <Description md={d.content} key={i}/>
-            </div>;
+            </section>;
         });
+    },
+    renderCustomTypes() {
+        if (this.props.raml.schemas) {
+            var types = [];
+            this.props.raml.schemas.forEach((s) => {
+                Object.keys(s).forEach((t, i) => {
+                    types.push(<h3 key={"header" + i}>{t}</h3>);
+                    types.push(<Code key={"body"+ i}>{s[t]}</Code>);
+                });
+            });
+            return <section>
+                <h2 style={{marginBottom: 20}}>Custom Schema Types</h2>
+                {types}
+            </section>;
+        }
+
     },
     render() {
         if (!this.props.raml.documentation) {
@@ -17,6 +34,7 @@ var HomeContent = React.createClass({
         return (
             <div>
                 {this.renderDescriptions()}
+                {this.renderCustomTypes()}
             </div>
         );
     }

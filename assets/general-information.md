@@ -4,6 +4,8 @@
 
 * Requests with method type _GET_ may contain parameters in the query string.
 
+* PUT Requests will always supply the full resource for the write operation
+
 ### Responses
 
 * Responses will deliver their payload JSON-encoded in the response body. The HTTP-Header _Content-Type_ is always set to _application/json_
