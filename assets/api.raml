@@ -38,6 +38,47 @@ traits:
             401:
                 description: Session id not valid or expired
 
+            403:
+                description: Valid user is not authorized
+    - error-body-returning:
+        responses:
+            400:
+                description: Request has failed
+                body:
+                    application/json:
+                        schema: !include error.cson
+
+resourceTypes:
+
+  - user-collection:
+        is: [secured]
+        securedBy: [sessionToken]
+        get:
+            displayName: Get the list of <<resourcePathName>> of a user
+        post:
+            is: [error-body-returning]
+            displayName: Create a new user <<resourcePathName|!singularize>>
+
+  - user-collection-item:
+        is: [secured, error-body-returning]
+        securedBy: [sessionToken]
+        put:
+            displayName: Update <<resourcePathName|!singularize>> of a user
+            responses:
+                204:
+                    description: Successfully updated <<resourcePathName|!singularize>>
+                404:
+                    description: <<resourcePathName|!singularize>> not found
+
+        delete:
+            displayName: Delete <<resourcePathName|!singularize>> of a user
+            responses:
+                204:
+                    description: Successfully deleted <<resourcePathName|!singularize>>
+                404:
+                    description: <<resourcePathName|!singularize>> not found
+
+
 schemas:
     - MultiLangString: |
         # a translated string

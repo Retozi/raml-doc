@@ -1,8 +1,6 @@
 /account:
-    displayName: User Account
+    displayName: User Account Metadata
     description: |
-        Metadata of the user-Account
-        * * *
         ####Dev
         The accountTypeId field seems to not be represented in the db-schema.
         To account for the future "premium" functions, this should not be
@@ -19,7 +17,7 @@
                         schema: !include account-get-200.cson
 
     put:
-        is: [secured]
+        is: [secured, error-body-returning]
         securedBy: [sessionToken]
         displayName: Edit account metadata
         description: |
@@ -33,8 +31,9 @@
                 schema: !include account-put-body.cson
         responses:
             204:
-                description: Succesfully updated user
+                description: Successfully updated user
     post:
+        is: [error-body-returning]
         displayName: Create a new Account
         body:
             application/json:
@@ -43,25 +42,12 @@
         responses:
             201:
                 description: Successfully created user
-            400:
-                description: User Creation has failed
-                body:
-                    application/json:
-                        example: !include account-post-400.json
-                        schema: |
-                            fieldErrors: [ 'FieldError' ]
-                            errors: [ 'Error' ]
 
 
     delete:
-        displayName: Delete Account
-        description: |
-            ####Dev
-            Reto: should this be a delete method? delete methods with body
-            [are tricky](http://stackoverflow.com/questions/299628/is-an-entity-body-allowed-for-an-http-delete-request)
-
-        is: [secured]
+        is: [secured, error-body-returning]
         securedBy: [sessionToken]
+        displayName: Delete Account
         body:
             application/json:
                 example: |
@@ -72,12 +58,11 @@
                     password: 'string'
         responses:
             204:
-                description: Succesfully deleted resource
+                description: Successfully deleted resource
 
 
 /logins:
-    is: [secured]
-    securedBy: [sessionToken]
+    type: user-collection
     displayName: User Logins
     description: |
         Manage additional logins of an account
@@ -87,7 +72,6 @@
         - single name field enough? Or even none?
 
     get:
-        displayName: Get all logins of the account
         responses:
             200:
                 body:
@@ -109,7 +93,6 @@
                                 }
                             ]
     post:
-        displayName: Create a new login
         responses:
             201:
                 body:
@@ -133,17 +116,8 @@
                                 }
                             ]
     /{loginId}:
-        is: [secured]
-        securedBy: [sessionToken]
-        displayName: One Login
-        delete:
-            description: Delete login
-            responses:
-                204:
-                  description: Successfully deleted login
-
+        type: user-collection-item
         put:
-            description: Edit login
             responses:
                 204:
                     body:
@@ -164,13 +138,14 @@
                                         role: 'string'
                                     }
                                 ]
+        delete:
 
         /password:
-            is: [secured]
-            securedBy: [sessionToken]
             displayName: Login Password
+            is: [secured, error-body-returning]
+            securedBy: [sessionToken]
             put:
-                displayName: "Changes password of login"
+                displayName: "Changes password"
                 body:
                     application/json:
                         example: |
@@ -196,8 +171,7 @@
     description: Manage reminders
 
 /badges:
-    is: [secured]
-    securedBy: [sessionToken]
+    type: user-collection
     displayName: User Badges
     get:
         description: Get a list of all badges
@@ -205,21 +179,14 @@
         description: Order/Register new badge
 
     /{badgeId}:
-        is: [secured]
-        securedBy: [sessionToken]
+        type: user-collection-item
         displayName: One User Badge
-        put:
-            description: Update badge
-        delete:
-            description: Delete badge
 
 
 /license-plates:
-    is: [secured]
-    securedBy: [sessionToken]
+    type: user-collection
     displayName: User License Plates
     get:
-        displayName: Get a list of all license plates
         responses:
             200:
                 body:
@@ -250,7 +217,6 @@
                             ]
 
     post:
-        displayName: Order/Register a new license plate
         body:
             application/json:
                 example: |
@@ -269,17 +235,11 @@
                     changeablePlate: 'boolean'
                     licensePlateTypeId: 'integer'
                     licensePlateCountryId: 'integer'
-        responses:
-            201:
-                description: "Successfully created license plate"
 
 
     /{licensePlateId}:
-        is: [secured]
-        securedBy: [sessionToken]
-        displayName: One User License Plate
+        type: user-collection-item
         put:
-            displayName: Update license plate
             body:
                 application/json:
                     example: |
@@ -298,49 +258,35 @@
                         changeablePlate: 'boolean'
                         licensePlateTypeId: 'integer'
                         licensePlateCountryId: 'integer'
-            responses:
-                204:
-                    description: Successfully updated license plate
         delete:
-            displayName: Unlink license plate from user
-            description: |
-                ####Dev
-                Is delete smart here?
-            responses:
-                204:
-                    description: Successfully unlink license plate
+
 
 /badge-permits:
-    displayName: Badge-Permits
-    is: [secured]
-    securedBy: [sessionToken]
+    type: user-collection
+    displayName: Badge Permits
     post:
-        description: Buy A new badge permit charged to the account
     get:
-        description: Get permits
+    /{badgePermitId}:
+        type: user-collection-item
 
 /license-plate-permits:
-    is: [secured]
-    securedBy: [sessionToken]
+    type: user-collection
     displayName: License Plate Permits
     post:
-        description: Buy A new license-plate permit charged to the account
     get:
-        description: Get permits
+    /{licensePlatePermitId}:
+        type: user-collection-item
 
 /badge-transactions:
-    displayName: badge Transactions
-    is: [secured]
-    securedBy: [sessionToken]
-    get:
-        description: Active badge transactions
-/license-plate-transactions:
-    displayName: License Plate Transactions
-    is: [secured]
-    securedBy: [sessionToken]
-    get:
-        description: Active license-plate transactions
+    type: user-collection
     post:
-        description: start a new license-plate transaction
-    patch:
-        description: stop a license plate transaction
+    get:
+
+/license-plate-transactions:
+    type: user-collection
+    post:
+    get:
+    /{licensePlateTransactionId}:
+        type: user-collection-item
+        patch:
+            description: stop a license plate transaction

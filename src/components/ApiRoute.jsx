@@ -146,10 +146,9 @@ var Headers = React.createClass({
 
 var Request = React.createClass({
     render() {
-        if (!this.props.body && !this.props.header) {
+        if (!this.props.body && !this.props.headers) {
             return null;
         }
-        console.log(this.props.headers);
         return (
             <div className="list-group-item">
                 <h3>Request</h3>
@@ -224,21 +223,23 @@ var METHOD_CONTEXTS = {
 // documents a single method (collapsible)
 var UriMethod = React.createClass({
     renderHeader() {
-        var met = this.props.methodData.method;
+        var d = this.props.methodData;
         return [
             <div
-             className={`btn btn-${BUTTON_CONTEXTS[met]} btn-xs`}
+             className={`btn btn-${BUTTON_CONTEXTS[d.method]} btn-xs`}
              style={{textTransform: "uppercase"}}
              key="button">
-                {met}
+                {d.method}
             </div>,
+            d.securedBy && <i className="fa fa-lock" style={{marginLeft: 5}}/>,
             <code key="code" style={{marginLeft: 5}}>{this.props.url}</code>,
             <span key="name" style={{float: 'right'}}>
-                {this.props.methodData.displayName}
+                {d.displayName}
             </span>
         ];
     },
     render() {
+        console.log(this.props.methodData);
         return (
             <Panel
              open={this.props.open}
