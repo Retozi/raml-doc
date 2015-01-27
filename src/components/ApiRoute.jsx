@@ -1,7 +1,8 @@
 require('highlight.js/styles/default.css');
 var React = require('react');
-
+var marked = require('marked');
 var State = require('react-router').State;
+var Navigation = require('react-router').Navigation;
 var Panel = require('./Panel');
 var Description = require('./Description');
 var Code = require('./Code');
@@ -19,13 +20,32 @@ var SubSection = React.createClass({
 });
 
 
+var DescHeader = React.createClass({
+
+    render() {
+        return (
+            <dt style={{fontWeight: 'normal', fontStyle: 'italic'}}>
+                {this.props.children}
+            </dt>
+        );
+    }
+});
+
+
 // a mixin that provides convenient access to router state and raml obj state
 var RamlState = {
+    // this assembles a route with the source query param, but not with
+    // method params
     getActiveApiRoute() {
-        var params = this.getParams();
-        var urlLevels = Object.keys(params);
-        urlLevels.sort();
-        return "/" + urlLevels.map((l) => params[l]).join("/");
+        var url = this.getPathname();
+        var querySource = this.getQuery().source;
+        if (querySource) {
+            url = url + '?source=' + querySource;
+        }
+        return url;
+    },
+    getExpandedMethod() {
+        return this.getQuery().method || null;
     },
     // loop recursively over the raml document and get the Raml data of
     // a given route
@@ -119,12 +139,16 @@ var HeaderAttributeDescription = React.createClass({
 });
 
 var Headers = React.createClass({
-    renderHeaderItem() {
+    renderHeaderItems() {
         var res = [];
-        Object.keys(this.props.headers).forEach((h) => {
+        Object.keys(this.props.headers).forEach((h, i) => {
             var v = this.props.headers[h];
-            res.push(<dt style={{fontWeight: 'normal', fontStyle: 'italic'}}>{v.displayName || h}</dt>);
-            res.push(<HeaderAttributeDescription {...v}/>);
+            res.push(
+                <DescHeader key={"h-" + i}>
+                    {v.displayName || h}
+                </DescHeader>
+            );
+            res.push(<HeaderAttributeDescription {...v} key={"desc-" + i}/>);
         });
         return res;
     },
@@ -136,7 +160,7 @@ var Headers = React.createClass({
             <section>
                 <h4>Headers</h4>
                 <div className="dl-horizontal">
-                    {this.renderHeaderItem()}
+                    {this.renderHeaderItems()}
                 </div>
             </section>
         );
@@ -206,18 +230,80 @@ var Responses = React.createClass({
 });
 
 
+var ParamEnum = React.createClass({
+
+    render() {
+        return (
+            <p>
+                <em>Choices: </em>
+                {
+                    this.props.enum.map((e) => <code style={{marginRight: 3}}>{e}</code>)
+                }
+            </p>
+        );
+    }
+});
+
+
+var QueryParamDescription = React.createClass({
+    render() {
+        var p = this.props;
+        return <dd style={{paddingBottom: 10}}>
+            {p.type && <code>{p.type}</code>}
+            {p.required && " (required)"}
+            {p.description && <p dangerouslySetInnerHTML={{__html: marked(p.description)}}/>}
+            {p.default && <p className="text-info default">{"Default: " + p.default}</p>}
+            {p.example && <p className="text-muted">{"Example: " + p.example}</p>}
+            {p.enum && <ParamEnum enum={p.enum}/>}
+        </dd>;
+    }
+});
+
+
+var QueryParams = React.createClass({
+    renderParams() {
+        var res = [];
+        Object.keys(this.props.queryParams).forEach((p, i) => {
+            var v = this.props.queryParams[p];
+            res.push(
+                <dt key={"h-" + i}>
+                    {v.displayName || p}
+                </dt>
+            );
+            res.push(<QueryParamDescription {...v} key={"desc-" + i}/>);
+        });
+        return res;
+    },
+    render() {
+        if (!this.props.queryParams) {
+            return null;
+        }
+        return (
+            <div className="list-group-item">
+                <h3>Query Parameters</h3>
+                <div className="dl-horizontal">
+                    {this.renderParams()}
+                </div>
+            </div>
+        );
+    }
+});
+
+
 var BUTTON_CONTEXTS = {
     get: 'primary',
     post: 'success',
     put: 'warning',
-    'delete': 'danger'
+    'delete': 'danger',
+    patch: 'warning'
 };
 
 var METHOD_CONTEXTS = {
     get: 'info',
     post: 'success',
     put: 'warning',
-    'delete': 'danger'
+    'delete': 'danger',
+    patch: 'warning'
 };
 
 // documents a single method (collapsible)
@@ -231,15 +317,17 @@ var UriMethod = React.createClass({
              key="button">
                 {d.method}
             </div>,
-            d.securedBy && <i className="fa fa-lock" style={{marginLeft: 5}}/>,
+
+            d.securedBy ? <i className="fa fa-lock" key="lock" style={{marginLeft: 5}}/> : null,
+
             <code key="code" style={{marginLeft: 5}}>{this.props.url}</code>,
+
             <span key="name" style={{float: 'right'}}>
                 {d.displayName}
             </span>
         ];
     },
     render() {
-        console.log(this.props.methodData);
         return (
             <Panel
              open={this.props.open}
@@ -251,6 +339,7 @@ var UriMethod = React.createClass({
                  md={this.props.methodData.description}
                  key="desc"/>
                 <div className="list-group" key="list-group">
+                    <QueryParams queryParams={this.props.methodData.queryParameters}/>
                     <Request {...this.props.methodData} key="req"/>
                     <Responses responses={this.props.methodData.responses}/>
                 </div>
@@ -262,24 +351,22 @@ var UriMethod = React.createClass({
 
 // Documents all the Methods of the Uri
 var UriMethods = React.createClass({
-    getInitialState() {
-        return {
-            expandedMethod: null
-        };
-    },
+    mixins: [Navigation, State, RamlState],
     toggle(method) {
-        var newState = null;
-        if (method !== this.state.expandedMethod) {
-            newState = method;
+        var route = this.getActiveApiRoute();
+        if (method !== this.getExpandedMethod()) {
+            var key = (route.indexOf("?") > -1) ? '&method=' : '?method=';
+            this.transitionTo(route + key + method);
+        } else {
+            this.transitionTo(route);
         }
-        this.setState({expandedMethod: newState});
     },
     renderMethods() {
         return this.props.methodData.map((m) => {
             return <UriMethod
                     methodData={m}
                     url={this.props.url}
-                    open={this.state.expandedMethod === m.method}
+                    open={this.getExpandedMethod() === m.method}
                     toggle={() => this.toggle(m.method)}
                     key={m.method}
                     />;
@@ -302,7 +389,7 @@ var UriMethods = React.createClass({
 var ApiRoute = React.createClass({
     mixins: [ State, RamlState],
     render() {
-        var apiUriData = this.getRamlData(this.getActiveApiRoute());
+        var apiUriData = this.getRamlData(this.getPathname());
         if (!apiUriData) {
             return null;
         }
@@ -313,7 +400,7 @@ var ApiRoute = React.createClass({
                     <UriMethods
                      methodData={apiUriData.methods}
                      url={apiUriData.absUrl}
-                     key={this.getActiveApiRoute()}/>
+                     key={this.getPath()}/>
                 </div>
             </Panel>
         );

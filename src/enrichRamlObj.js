@@ -10,16 +10,20 @@ function order(a, b) {
     return 0;
 }
 
-function enrich(ramlObj, parentUrl, allUriParameters) {
+function enrich(ramlObj, parentUrl, allUriParameters, nestingLevel) {
     if (!ramlObj.resources) {
         return;
+    }
+    if (nestingLevel === undefined) {
+        nestingLevel = 0;
     }
     ramlObj.resources.forEach((r) => {
         r.parentUrl = parentUrl || '';
         r.absUrl = r.parentUrl + r.relativeUri;
+        r.nestingLevel = nestingLevel;
         r.allUriParameters = [].concat(allUriParameters || []);
         r.allUriParameters = r.allUriParameters.concat(r.uriParameters || []);
-        enrich(r, r.absUrl, r.allUriParameters);
+        enrich(r, r.absUrl, r.allUriParameters, nestingLevel + 1);
     });
 
     // make sure the resources have a predictable order

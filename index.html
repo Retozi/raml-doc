@@ -6,7 +6,14 @@
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200">
 </head>
 <body>
-  <div id="app-container"/>
-  <script src="/bundle.js"></script>
+    <script type="application/json" id="dev-server">
+        {
+            "url": "http://localhost:8081",
+            "file": "https://cdn.rawgit.com/kevinrenskers/raml2html/master/examples/github.raml"
+        }
+    </script>
+
+    <div id="app-container"/>
+    <script src="/bundle.js"></script>
 </body>
 </html>

@@ -1,0 +1,139 @@
+displayName: User Account Metadata
+description: |
+    [Relevant Frontend Specification](https://parkingcard.atlassian.net/wiki/display/SPEC/10+AccountHolder)
+    ####Dev
+    - The accountTypeId field seems to not be represented in the db-schema.
+    To account for the future "premium" functions, this should not be
+    handled with a boolean company flag
+
+    - you cannot set the password here. All passwords must be changed
+    via the login route. The user can define a primaryLogin to set the
+    email address used for correspondence purposes. If it is a private person
+    the user can only have one login, and he won't be able to add new logins
+get:
+    is: [secured]
+    securedBy: [sessionToken]
+    displayName: Get account metadata
+    responses:
+        200:
+            body:
+                application/json:
+                    example: |
+                        {
+                            "correspondenceLanguageId": 1,
+                            "accountTypeId": 1,
+                            "address": {
+                                "salutationLine": "Herr",
+                                "firstName": "Hans",
+                                "lastName": "Muster",
+                                "street1": "Teststrasse 1",
+                                "zipCode": "8000",
+                                "city": "Zürich",
+                                "countryId": 1
+                            }
+                        }
+                    schema: |
+                        correspondenceLanguageId: 'integer'
+                        accountTypeId: 'integer'
+                        address: 'Address'
+
+
+
+put:
+    is: [secured, error-body-returning]
+    securedBy: [sessionToken]
+    displayName: Edit account metadata
+    body:
+        application/json:
+            example: |
+                {
+                    "correspondenceLanguageId": 1,
+                    "accountTypeId": 1,
+                    "address": {
+                        "salutationLine": "Herr",
+                        "firstName": "Hans",
+                        "lastName": "Muster",
+                        "street1": "Teststrasse 1",
+                        "zipCode": "8000",
+                        "city": "Zürich",
+                        "countryId": 1
+                    }
+                }
+            schema: |
+                correspondenceLanguageId: 'integer'
+                accountTypeId: 'integer'
+                address: 'Address'
+    responses:
+        204:
+            description: Successfully updated user
+post:
+    is: [error-body-returning]
+    displayName: Create a new Account
+    body:
+        application/json:
+            example: |
+                {
+                    "accountTypeId": 1,
+                    "sendBadge": true,
+                    "licensePlate": {
+                        "countryId": 1,
+                        "groupId": 1,
+                        "number": "ZH727222",
+                        "sendVignette": false
+                    },
+                    "address": {
+                        "salutationLine": "Herr",
+                        "firstName": "Hans",
+                        "lastName": "Muster",
+                        "street1": "Teststrasse 1",
+                        "zipCode": "8000",
+                        "city": "Zürich",
+                        "countryId": 1
+                    },
+                    "login": {
+                        "email": "test@bla.ch",
+                        "password": "1234abc",
+                        "mobilePhone": "0793333333"
+                    }
+                }
+            schema: |
+                accountTypeId: 'integer'
+
+                sendBadge: 'boolean'
+
+                licensePlate:
+                    countryId: 'integer'
+                    groupId: 'integer'
+                    number: 'string'
+                    sendVignette: 'boolean'
+
+                address: 'Address'  #address only needed if info must be sent
+
+                login:
+                    email: 'string'
+                    password: 'string'
+                    mobilePhone: 'string'
+
+                $required: 'accountTypeId sendBadge login'
+
+    responses:
+        201:
+            description: Successfully created user
+
+
+delete:
+    is: [secured, error-body-returning]
+    securedBy: [sessionToken]
+    displayName: Delete Account
+    body:
+        application/json:
+            example: |
+                {
+                    "password": "xyz"
+                }
+            schema: |
+                password: 'string'
+    responses:
+        204:
+            description: Successfully deleted resource
+

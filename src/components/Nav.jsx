@@ -1,8 +1,7 @@
 
 var React = require('react/addons');
 var Link = require('react-router').Link;
-
-var cx = React.addons.classSet;
+var RouterState = require('react-router').State;
 
 var ListGroup = React.createClass({
     render() {
@@ -33,21 +32,45 @@ var BADGES = {
     'get': <Badge type="info" icon="arrow-down" key="get"/>,
     'post': <Badge type="success" icon="plus" key="post"/>,
     'put': <Badge type="warning" icon="pencil"key="put"/>,
+    'patch': <Badge type="warning" icon="pencil"key="patch"/>,
     'delete': <Badge type="danger" icon="times" key="delete"/>
 };
 
 var ListItem = React.createClass({
+    mixins: [RouterState],
+    makeTarget() {
+        var s = this.getQuery().source;
+        if (s) {
+            return this.props.to + '?source=' + s;
+        }
+        return this.props.to;
+    },
+    getClassName() {
+        if (this.props.to === this.getPathname()) {
+            return 'list-group-item active';
+        }
+        return 'list-group-item';
+    },
     render() {
-        var cls = cx({"list-group-item": true});
-        return (
-            <Link
-             className={cls}
-             to={this.props.to}
-             style={{paddingLeft: this.props.indent * 20}}>
-                {this.props.caption}
-                {this.props.methods.map((m) => BADGES[m])}
-            </Link>
-        );
+        var style = {paddingLeft: 10 + this.props.indent * 20};
+        if (this.props.methods.length > 0) {
+            return (
+                <Link
+                 className={this.getClassName()}
+                 to={this.makeTarget()}
+                 style={style}>
+                    {this.props.caption}
+                    {this.props.methods.map((m) => BADGES[m])}
+                </Link>
+            );
+        } else {
+            style.color = '#ccc';
+            return (
+                <div className="list-group-item" style={style}>
+                    {this.props.caption}
+                </div>
+            );
+        }
     }
 });
 
@@ -63,12 +86,11 @@ var Home = React.createClass({
 });
 
 function renderItem(r) {
-    var indent = r.absUrl.split('/').length - 1;
     var methods = r.methods ? r.methods.map((m) => m.method) : [];
     return <ListItem
             caption={r.relativeUri}
             methods={methods}
-            indent={indent}
+            indent={r.nestingLevel}
             to={r.absUrl}
             key={r.absUrl}/>;
 }

@@ -1,0 +1,97 @@
+type: user-collection
+displayName: User Logins
+description: |
+    Manage additional logins of an account
+    * * *
+    ####Dev
+    - roles must be defined.
+    - single name field enough? Or even none?
+
+get:
+    responses:
+        200:
+            body:
+                application/json:
+                    example: |
+                        [
+                            {
+                                "name": "Reto Schläpfer",
+                                "email": "test@bla.ch",
+                                "role": "restricted_user"
+                            }
+                        ]
+                    schema: |
+                        [
+                            {
+                                name: 'string',
+                                email: 'string',
+                                role: 'string'
+                            }
+                        ]
+post:
+    responses:
+        201:
+            body:
+                application/json:
+                    example: |
+                        [
+                            {
+                                "name": "Reto Schläpfer",
+                                "email": "test@bla.ch",
+                                "password": "pwd1234",
+                                "role": "restricted_user"
+                            }
+                        ]
+                    schema: |
+                        [
+                            {
+                                name: 'string',
+                                email: 'string',
+                                role: 'string',
+                                password: 'string'
+                            }
+                        ]
+/{loginId}:
+    type: user-collection-item
+    put:
+        responses:
+            204:
+                body:
+                    application/json:
+                        example: |
+                            [
+                                {
+                                    "name": "Reto Schläpfer",
+                                    "email": "test@bla.ch",
+                                    "role": "restricted_user"
+                                }
+                            ]
+                        schema: |
+                            [
+                                {
+                                    name: 'string',
+                                    email: 'string',
+                                    role: 'string'
+                                }
+                            ]
+    delete:
+
+    /password:
+        displayName: Login Password
+        is: [secured, error-body-returning]
+        securedBy: [sessionToken]
+        put:
+            displayName: "Changes password"
+            body:
+                application/json:
+                    example: |
+                        {
+                            "oldPassword": "test1234",
+                            "newPassword": "VeRyS4ure1!"
+                        }
+                    schema: |
+                        oldPassword: 'string'
+                        newPassword: 'string'
+            responses:
+                204:
+                    description: Successfully changed password

@@ -103,6 +103,21 @@ schemas:
             fr: 'string'
             it: 'string'
 
+      Address: |
+        #an address that allows for either a company or a private person
+        salutationLine: 'string'
+        company1: 'string'
+        company2: 'string'
+        firstName: 'string'
+        lastName: 'string'
+        street1: 'string'
+        street2: 'string'
+        zipCode: 'string'
+        city: 'string'
+        countryId: 'integer'
+
+        $required: 'street1 zipCode city countryId'
+
 
 /user: !include ./user/user.raml
 

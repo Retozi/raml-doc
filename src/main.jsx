@@ -3,12 +3,16 @@ var React = require('react');
 var Router = require('react-router');
 var Route = Router.Route;
 var Redirect = Router.Redirect;
+var parseOptions =require('./parseOptions');
 
 var App = require('./components/App');
 var ApiRoute = require('./components/ApiRoute');
 var HomeContent = require('./components/HomeContent');
 
+
 require('./main.styl');
+
+var options = parseOptions();
 
 // This is kind of a rape of react-router, but the urls look nice...
 var routes = (
@@ -26,9 +30,10 @@ var routes = (
 );
 
 
+
 Router.run(routes, function (Handler) {
     React.render(
-        <Handler ramlPath="./assets/api.raml"/>,
+        <Handler/>,
         document.getElementById('app-container')
     );
 });
