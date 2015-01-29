@@ -83,8 +83,11 @@ module.exports = function(options) {
         io.on('connection', sendDataToSocket(options));
 
         // send data whenever files change
-        watch(path.dirname(options.source), function() {
-            sendDataToSocket(options)(io);
+        watch(path.dirname(options.source), function(filename) {
+            var ext = path.extname(filename);
+            if (ext !== '.html' && ext !== '.js') {
+                sendDataToSocket(options)(io);
+            }
         });
 
     };
