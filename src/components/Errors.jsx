@@ -5,7 +5,6 @@ var Panel = require('./Panel');
 var ValidationError = React.createClass({
 
     render() {
-        console.log(this.props.error);
         return (
             <div className="list-group-item">
                 <pre>
@@ -26,8 +25,10 @@ var MethodError = React.createClass({
         });
     },
     render() {
+        var id = this.props.error.id;
+        var header = (typeof id === 'string') ? id : id.join(' ');
         return (
-            <Panel header={this.props.error.id.join(' ')} type="default">
+            <Panel header={header} type="default">
                 <div className="list-group">
                     {this.renderErrors()}
                 </div>
@@ -39,15 +40,14 @@ var MethodError = React.createClass({
 
 var Errors = React.createClass({
     renderErrors() {
-        return this.props.errors.map((e) => {
-            return <MethodError key={e.id.join('/')} error={e}/>;
+        return this.props.errors.map((e, i) => {
+            return <MethodError key={i} error={e}/>;
         });
     },
     render() {
         if (!this.props.errors) {
             return null;
         }
-        console.log(this.props);
         return (
             <Panel header="Validation Errors" type="danger">
                 <div className="panel-body">

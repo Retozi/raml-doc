@@ -17,7 +17,7 @@ function enrich(ramlObj, parentUrl, allUriParameters, nestingLevel) {
     if (nestingLevel === undefined) {
         nestingLevel = 0;
     }
-    ramlObj.resources.forEach((r) => {
+    ramlObj.resources.forEach(function(r) {
         r.parentUrl = parentUrl || '';
         r.absUrl = r.parentUrl + r.relativeUri;
         r.nestingLevel = nestingLevel;
@@ -30,4 +30,12 @@ function enrich(ramlObj, parentUrl, allUriParameters, nestingLevel) {
     ramlObj.resources.sort(order);
 }
 
-module.exports = enrich;
+module.exports = function(ramlObj) {
+    // make a copy
+    if (!ramlObj) {
+        return null;
+    }
+    ramlObj = JSON.parse(JSON.stringify(ramlObj));
+    enrich(ramlObj);
+    return ramlObj;
+};

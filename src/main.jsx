@@ -12,8 +12,6 @@ var HomeContent = require('./components/HomeContent');
 
 require('./main.styl');
 
-var options = parseOptions();
-
 // This is kind of a rape of react-router, but the urls look nice...
 var routes = (
     <Route path="/" handler={App}>
@@ -33,7 +31,7 @@ var routes = (
 
 Router.run(routes, function (Handler) {
     React.render(
-        <Handler/>,
+        <Handler {...parseOptions()}/>,
         document.getElementById('app-container')
     );
 });

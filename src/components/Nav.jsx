@@ -122,6 +122,9 @@ var Nav = React.createClass({
         }
     },
     render() {
+        if( !this.props.raml) {
+            return null;
+        }
         return (
             <div className="col-md-4" style={{paddingTop: 40, paddingRight: 30}}>
                 <Home/>

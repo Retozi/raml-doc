@@ -12,6 +12,7 @@
     "marked": "0.3.x",
     "highlight.js": "8.4.x",
     "react-router": "0.11.x",
+    "cheerio": "0.18.0",
     "csonschema": "git://github.com/Retozi/csonschema.git#master",
     "js-yaml": "3.2.x",
     "jsonschema": "1.0.x",

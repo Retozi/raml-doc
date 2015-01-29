@@ -5,8 +5,8 @@ var Code = require('./Code');
 var HomeContent = React.createClass({
     renderDescriptions() {
         return this.props.raml.documentation.map((d, i) => {
-            return <section>
-                <h2>{d.title}</h2>
+            return <section key={i}>
+                <h2 key="header">{d.title}</h2>
                 <Description md={d.content} key={i}/>
             </section>;
         });
@@ -28,7 +28,7 @@ var HomeContent = React.createClass({
 
     },
     render() {
-        if (!this.props.raml.documentation) {
+        if (!this.props.raml || !this.props.raml.documentation) {
             return null;
         }
         return (

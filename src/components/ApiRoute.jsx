@@ -51,6 +51,9 @@ var RamlState = {
     // a given route
     getRamlData(route) {
         var res;
+        if (!this.props.raml) {
+            return null;
+        }
         function _traverse(r) {
             if (res) {
                 return;

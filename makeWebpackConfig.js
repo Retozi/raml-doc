@@ -34,8 +34,8 @@ module.exports = function(type) {
     return {
         entry: getEntry(type),
         output: {
-            path: __dirname + '/assets',
-            filename: 'bundle.js',
+            path: __dirname + '/build',
+            filename: 'raml-doc.js',
             publicPath: "/"
         },
         plugins: getPlugins(type),

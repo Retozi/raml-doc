@@ -1,7 +1,7 @@
 var validateJson = require('jsonschema').validate;
 var csonschema = require('csonschema');
 var yaml = require('js-yaml');
-
+var enrichRamlObj = require('../src/enrichRamlObj');
 
 // return undefined if obj does not have valid key,value pairs
 function onlyContent(obj) {
@@ -9,7 +9,7 @@ function onlyContent(obj) {
         return;
     }
     // remove empty keys
-    Object.keys(obj).forEach((k) => {
+    Object.keys(obj).forEach(function(k) {
         if (!obj[k]) {
             delete obj[k];
         }
@@ -87,7 +87,7 @@ function _flatten(obj, idArray, res) {
     if (obj instanceof Array) {
         res.push({id: idArray, errors: obj});
     } else {
-        Object.keys(obj).forEach((k) => {
+        Object.keys(obj).forEach(function(k) {
             _flatten(obj[k], idArray.concat([k]), res);
         });
     }
@@ -101,8 +101,8 @@ function flattenErrors(errorsObj) {
 
 function extractCustomTypes(schemas) {
     var types = {};
-    schemas.forEach((s) => {
-        Object.keys(s).forEach((t) => {
+    schemas.forEach(function(s) {
+        Object.keys(s).forEach(function(t) {
             types[t] = yaml.safeLoad(s[t]);
         });
     });
@@ -110,6 +110,7 @@ function extractCustomTypes(schemas) {
 }
 
 function validateExamles(ramlObj) {
+    ramlObj = enrichRamlObj(ramlObj);
     var errors = {};
     var customTypes = extractCustomTypes(ramlObj.schemas);
     getExamples(ramlObj.resources, customTypes, errors);
