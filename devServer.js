@@ -23,4 +23,5 @@ var server = new WebpackDevServer(webpack(config), {
 
 server.listen(8080, "localhost", function() {});
 
+// lets fire up a dev server
 devServer({source: './assets/api.raml'}).listen(8081);
