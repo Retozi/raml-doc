@@ -1,12 +1,12 @@
 function parseOptions() {
     var devServerOptions = document.getElementById("dev-server");
-    if (devServerOptions && devServerOptions.innerText) {
-        return JSON.parse(devServerOptions.innerText);
+    if (devServerOptions) {
+        return JSON.parse(devServerOptions.innerText || devServerOptions.textContent);
     }
 
     var otherOptions = document.getElementById("raml-doc");
-    if (otherOptions && otherOptions.innerText) {
-        return JSON.parse(otherOptions.innerText);
+    if (otherOptions) {
+        return JSON.parse(otherOptions.innerText || otherOptions.textContent);
     }
 
 }
