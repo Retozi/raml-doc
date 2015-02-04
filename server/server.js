@@ -23,7 +23,7 @@ function bundleHtml(raml) {
     var $ = template();
     $('body').prepend('<script type="application/json" id="raml-doc"/>');
     $('#raml-doc').text(JSON.stringify({raml: raml}));
-    $('body').append('<script src="https://cdn.rawgit.com/Retozi/raml-doc/master/build/raml-doc.js"></script>');
+    $('body').append('<script src="https://rawgit.com/Retozi/raml-doc/master/build/raml-doc.js"></script>');
     return $.html();
 }
 
