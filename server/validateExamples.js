@@ -1,6 +1,6 @@
 var validateJson = require('jsonschema').validate;
 var terseJsonschema = require('terse-jsonschema');
-var yaml = require('js-yaml');
+var cson = require('cson');
 var enrichRamlObj = require('../src/enrichRamlObj');
 
 // return undefined if obj does not have valid key,value pairs
@@ -29,7 +29,7 @@ function processBody(body, customTypes) {
     var schemaStr = body['application/json'].schema;
     if (exampleStr && schemaStr) {
         try {
-            jsonSchema = terseJsonschema.parse(yaml.safeLoad(schemaStr), customTypes);
+            jsonSchema = terseJsonschema.parse(cson.parse(schemaStr), customTypes);
             json = JSON.parse(exampleStr);
         } catch(err) {
             return [err];
@@ -103,7 +103,7 @@ function extractCustomTypes(schemas) {
     var types = {};
     schemas.forEach(function(s) {
         Object.keys(s).forEach(function(t) {
-            types[t] = yaml.safeLoad(s[t]);
+            types[t] = cson.parse(s[t]);
         });
     });
     return types;
