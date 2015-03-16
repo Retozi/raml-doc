@@ -1,12 +1,12 @@
 var validateJson = require('jsonschema').validate;
-var csonschema = require('csonschema');
+var terseJsonschema = require('terse-jsonschema');
 var yaml = require('js-yaml');
 var enrichRamlObj = require('../src/enrichRamlObj');
 
 // return undefined if obj does not have valid key,value pairs
 function onlyContent(obj) {
     if (!obj) {
-        return;
+        return null;
     }
     // remove empty keys
     Object.keys(obj).forEach(function(k) {
@@ -23,13 +23,13 @@ function onlyContent(obj) {
 function processBody(body, customTypes) {
     var jsonSchema, json;
     if (!body) {
-        return;
+        return null;
     }
     var exampleStr = body['application/json'].example;
     var schemaStr = body['application/json'].schema;
     if (exampleStr && schemaStr) {
         try {
-            jsonSchema = csonschema.parse(schemaStr, customTypes);
+            jsonSchema = terseJsonschema.parse(yaml.safeLoad(schemaStr), customTypes);
             json = JSON.parse(exampleStr);
         } catch(err) {
             return [err];
@@ -44,7 +44,7 @@ function processBody(body, customTypes) {
 
 function processResponseBodies(responses, customTypes) {
     if (!responses) {
-        return;
+        return null;
     }
     var responseExamples = {};
     Object.keys(responses).forEach(function(key) {
@@ -56,13 +56,13 @@ function processResponseBodies(responses, customTypes) {
 
 function processMethods(methods, customTypes) {
     if (!methods) {
-        return;
+        return null;
     }
     var methodExamples = {};
     methods.forEach(function(m) {
         var method = {
             req: processBody(m.body, customTypes),
-            res: processResponseBodies(m.responses, customTypes),
+            res: processResponseBodies(m.responses, customTypes)
 
         };
         methodExamples[m.method] = onlyContent(method);

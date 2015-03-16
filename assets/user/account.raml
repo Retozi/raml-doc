@@ -20,7 +20,7 @@ get:
                 application/json:
                     example: |
                         {
-                            "correspondenceLanguageId": 1,
+                            "correspondenceLanguageId": null,
                             "accountTypeId": 1,
                             "address": {
                                 "salutationLine": "Herr",
@@ -33,7 +33,9 @@ get:
                             }
                         }
                     schema: |
-                        correspondenceLanguageId: 'integer'
+                        correspondenceLanguageId:
+                            $oneOf:
+                                ['integer', 'null']
                         accountTypeId: 'integer'
                         address: 'Address'
 
