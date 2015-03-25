@@ -19,10 +19,10 @@ function devHtml(port) {
     return $.html();
 }
 
-function bundleHtml(raml) {
+function bundleHtml(ramlObj) {
     var $ = template();
     $('body').prepend('<script type="application/json" id="raml-doc"/>');
-    $('#raml-doc').text(JSON.stringify({raml: raml}));
+    $('#raml-doc').text(JSON.stringify({raml: ramlObj}));
     $('body').append('<script src="https://rawgit.com/Retozi/raml-doc/master/build/raml-doc.js"></script>');
     return $.html();
 }
