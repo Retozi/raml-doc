@@ -1,24 +1,13 @@
 {
-    "ecmaFeatures": {
-        "blockBindings": true,
-        "defaultParams": true,
-        "forOf": true,
-        "jsx": true,
-        "objectLiteralShorthandMethods": true,
-        "arrowFunctions": true,
-        "templateStrings": true,
-        "spread": true,
-    },
     "rules": {
         "semi": 2,
         "quotes": 0,
-        "strict": [2, "never"],
         "indent": 2,
         "brace-style": 2,
         "no-use-before-define": 0,
         "no-underscore-dangle": 0,
         "dot-notation": [2, {"allowKeywords": false}],
-        "max-nested-callbacks": [2, 3],
+        "max-nested-callbacks": [2, 5],
         "no-multiple-empty-lines": [2, {"max": 2}],
         "no-nested-ternary": 2,
         "space-after-keywords": [2, "always"],
@@ -32,6 +21,7 @@
     },
     "env": {
         "node": true,
-        "mocha": true
+        "mocha": true,
+        "es6": true
     }
 }

@@ -14,7 +14,13 @@
     "cson": "2.0.x",
     "jsonschema": "1.0.x",
     "node-watch": "0.3.x",
-    "raml-parser": "0.8.x"
+    "raml-parser": "0.8.x",
+    "bluebird": "2.9.x",
+    "supertest": "0.15.x",
+    "deasync": "0.0.10",
+    "methods": "1.x",
+    "mocha": "2.2.x",
+    "should": "5.2.x"
   },
   "devDependencies": {
     "react": "0.12.2",
