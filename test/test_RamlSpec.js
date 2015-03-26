@@ -1,11 +1,19 @@
 "use strict";
 
-var RamlSpec = require('../server/RamlSpec');
+var ramlSpec = require('../server/ramlSpec');
 require('should');
 
-describe('RamlSpec', function() {
-    var s = new RamlSpec('./fixture/api.raml');
+var FILE = './fixture/api.raml';
 
+describe('RamlSpec', function() {
+    var s = ramlSpec.loadSync(FILE);
+
+    it('should fetch async', function() {
+        return ramlSpec.loadAsync(FILE)
+            .then(function(data) {
+                data.getData().version.should.equal('1');
+            });
+    });
 
     it('return data', function() {
         s.getData().version.should.equal('1');

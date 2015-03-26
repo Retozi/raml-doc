@@ -4,8 +4,7 @@ const raml = require('raml-parser');
 const CSON = require('cson');
 const terseJsonschema = require('terse-jsonschema');
 
-
-function parse(file) {
+function parseSync(file) {
     var res;
     // async load of the RAML spec. THis does not block!
     raml.loadFile(file)
@@ -23,6 +22,7 @@ function parse(file) {
     })();
     return res;
 }
+
 
 // extract the global types from the schema. This is needed for correct validation
 function parseGlobalTypes(ramlObj) {
@@ -94,10 +94,10 @@ function parseSchemaStr(schemaStr, globalTypes) {
     return terseJsonschema.parse(schema, globalTypes);
 }
 
-function RamlSpec(file) {
-    var _data = parse(file);
-    var _routes = parseRoutes(_data);
-    var _globalTypes = parseGlobalTypes(_data);
+
+function ramlSpec(data) {
+    var _routes = parseRoutes(data);
+    var _globalTypes = parseGlobalTypes(data);
 
     function extractResponseJsonDef(path, method, status) {
         method = method.toLowerCase();
@@ -133,7 +133,7 @@ function RamlSpec(file) {
     }
     return {
         getData: function() {
-            return _data;
+            return data;
         },
         getRoutes: function() {
             return _routes;
@@ -159,4 +159,14 @@ function RamlSpec(file) {
 }
 
 
-module.exports = RamlSpec;
+module.exports = {
+    loadSync: function(path) {
+        return ramlSpec(parseSync(path));
+    },
+    loadAsync: function(path) {
+        return raml.loadFile(path)
+            .then(function(data) {
+                return ramlSpec(data);
+            });
+    }
+};

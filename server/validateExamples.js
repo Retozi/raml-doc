@@ -110,6 +110,7 @@ function extractCustomTypes(schemas) {
 }
 
 function validateExamles(ramlObj) {
+    /*
     ramlObj = enrichRamlObj(ramlObj);
     var errors = {};
     var customTypes = extractCustomTypes(ramlObj.schemas);
@@ -118,6 +119,7 @@ function validateExamles(ramlObj) {
     if (Object.keys(errors).length > 0) {
         return flattenErrors(errors);
     }
+    */
     return null;
 }
 

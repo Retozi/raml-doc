@@ -3,12 +3,13 @@ var watch = require("node-watch");
 var path = require("path");
 var fs = require('fs');
 var express = require('express');
-var raml = require('raml-parser');
+var ramlSpec = require('./ramlSpec');
 var cheerio = require('cheerio');
 var validateExamples = require('./validateExamples');
 
+
 function template() {
-    return cheerio.load(fs.readFileSync(__dirname + '/index.html', "utf8"));
+    return cheerio.load(fs.readFileSync(path.join(__dirname, 'index.html'), "utf8"));
 }
 
 function devHtml(port) {
@@ -23,14 +24,16 @@ function bundleHtml(ramlObj) {
     var $ = template();
     $('body').prepend('<script type="application/json" id="raml-doc"/>');
     $('#raml-doc').text(JSON.stringify({raml: ramlObj}));
-    $('body').append('<script src="https://rawgit.com/Retozi/raml-doc/master/build/raml-doc.js"></script>');
+    $('body').append(
+        '<script src="https://rawgit.com/Retozi/raml-doc/master/build/raml-doc.js"></script>'
+    );
     return $.html();
 }
 
 function expressServer(port) {
     var app = express();
 
-    app.use(express.static(__dirname + '/../build'));
+    app.use(express['static'](path.join(__dirname, '../build')));
 
     app.get('/', function(req, res) {
         res.send(devHtml(port));
@@ -40,8 +43,9 @@ function expressServer(port) {
 }
 
 function sendRamlToSocket(socket, bundle) {
-    return function(data) {
-        var errors = validateExamples(data);
+    return function(ramlSpecObj) {
+        var errors = validateExamples(ramlSpecObj);
+        var data = ramlSpecObj.getData();
         socket.emit("raml", {raml: data, validationErrors: errors});
 
         if (bundle) {
@@ -63,8 +67,8 @@ function sendParseErrorToSocket(socket) {
 }
 
 function sendDataToSocket(options) {
-    return function(socket){
-        raml.loadFile(options.source)
+    return function(socket) {
+        ramlSpec.loadAsync(options.source)
             .then(sendRamlToSocket(socket, options.bundle))
             .fail(sendParseErrorToSocket(socket))
             .done();
