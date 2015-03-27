@@ -11,7 +11,7 @@
     "terse-jsonschema": "git://github.com/Retozi/terse-jsonschema.git#master",
     "js-yaml": "3.2.x",
     "cson-parser": "1.0.x",
-    "jsonschema": "1.0.x",
+    "jsonschema": "1.0.0",
     "node-watch": "0.3.x",
     "raml-parser": "0.8.9",
     "bluebird": "2.9.x",
