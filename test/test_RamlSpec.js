@@ -1,6 +1,6 @@
 "use strict";
 
-var ramlSpec = require('../server/ramlSpec');
+var ramlSpec = require('../lib/ramlSpec');
 
 var should = require('should');
 

@@ -38,5 +38,10 @@
     "stylus-loader": "0.5.x",
     "react-hot-loader": "1.1.x",
     "autoprefixer-loader": "1.0.x"
-  }
+  },
+  "scripts": {
+    "test": "mocha --harmony",
+    "start": "node --harmony ./devServer.js"
+  },
+  "main": "lib/index.js"
 }

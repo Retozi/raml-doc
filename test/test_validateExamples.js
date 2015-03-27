@@ -1,7 +1,7 @@
 "use strict";
 
-var validateExamples = require('../server/validateExamples');
-var ramlSpec = require('../server/ramlSpec');
+var validateExamples = require('../lib/validateExamples');
+var ramlSpec = require('../lib/ramlSpec');
 var should = require('should');
 
 
@@ -14,7 +14,8 @@ describe('validate examples', function() {
     it('valid does not produce errors', function() {
         var s = ramlSpec.loadSync(FILE);
         var errs = validateExamples(s);
-        errs.length.should.equal(0);
+        should(null).equal(errs);
+
     });
 
     it('invalid payload description produces errors', function() {

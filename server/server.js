@@ -3,9 +3,9 @@ var watch = require("node-watch");
 var path = require("path");
 var fs = require('fs');
 var express = require('express');
-var ramlSpec = require('./ramlSpec');
+var ramlSpec = require('../lib/ramlSpec');
 var cheerio = require('cheerio');
-var validateExamples = require('./validateExamples');
+var validateExamples = require('../lib/validateExamples');
 
 
 function template() {
