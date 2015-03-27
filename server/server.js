@@ -61,7 +61,7 @@ function sendRamlToSocket(socket, bundle) {
 function sendParseErrorToSocket(socket) {
     return function(err) {
         // convert the error into the same format as a schema validation error
-        var errors = [{id: "YAML Parse Error", errors: [err]}];
+        var errors = [{url: "YAML Parse Error", message: JSON.stringify(err)}];
         socket.emit("raml", {raml: null, validationErrors: errors});
     };
 }

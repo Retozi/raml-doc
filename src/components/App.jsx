@@ -1,12 +1,12 @@
+"use strict";
 var React = require('react');
 var enrichRamlObj = require('../enrichRamlObj');
-var raml = require('raml-parser');
+//var raml = require('raml-parser');
 var Nav = require('./Nav');
 var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
 var RouterState = Router.State;
 var Errors = require('./Errors');
-
 
 var App = React.createClass({
     mixins: [RouterState],
@@ -16,15 +16,19 @@ var App = React.createClass({
             validationErrors: null
         };
     },
-    setRamlState(raml, validationErrors) {
+    setRamlState(rml, validationErrors) {
         this.setState({
-            raml: enrichRamlObj(raml) || null,
+            raml: enrichRamlObj(rml) || null,
             validationErrors: validationErrors || null
         });
     },
     loadFromSource() {
         var source = this.props.source || this.getQuery().source;
         if (source) {
+            /*
+            DOES NOT WORK BECAUSE raml-parser FUCKUP... let's wait for newer versions
+            (only with hot reload...??)
+
             raml.loadFile(source).then((parsedRaml) => {
                 this.setRamlState(parsedRaml, null);
             }).fail(function(err) {
@@ -32,6 +36,7 @@ var App = React.createClass({
                 var errors = [{id: "YAML Parse Error", errors: [err]}];
                 this.setRamlState(null, errors);
             }).done();
+            */
         } else if (this.props.raml) {
             this.setRamlState(this.props.raml, null);
         }

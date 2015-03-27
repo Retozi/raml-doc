@@ -1,36 +1,28 @@
+"use strict";
+
 var React = require('react');
 var Panel = require('./Panel');
 
 
-var ValidationError = React.createClass({
-
-    render() {
-        return (
-            <div className="list-group-item">
-                <pre>
-                    <code>
-                        {this.props.error.stack || this.props.error.message}
-                    </code>
-                </pre>
-            </div>
-        );
-    }
-});
-
-
 var MethodError = React.createClass({
-    renderErrors() {
-        return this.props.error.errors.map((e, i) => {
-            return <ValidationError key={i} error={e}/>;
-        });
+    makeHeader() {
+        var e = this.props.error;
+        var url = e.url;
+        var method = e.method || '';
+        var status = e.status || '';
+        return [url, method.toUpperCase(), status].join(' ');
     },
     render() {
-        var id = this.props.error.id;
-        var header = (typeof id === 'string') ? id : id.join(' ');
         return (
-            <Panel header={header} type="default">
+            <Panel header={this.makeHeader()} type="default">
                 <div className="list-group">
-                    {this.renderErrors()}
+                    <div className="list-group-item">
+                        <pre>
+                            <code>
+                                {this.props.error.message}
+                            </code>
+                        </pre>
+                    </div>
                 </div>
             </Panel>
         );

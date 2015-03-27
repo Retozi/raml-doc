@@ -11,22 +11,31 @@ function validate(schema, example) {
     return [];
 }
 
+function makeError(url, method, status, message) {
+    return {
+        url: url,
+        method: method,
+        status: status || null,
+        message: message
+    };
+}
+
 function* validatePayload(url, method, ramlObj) {
     var schema;
     var example;
     try {
         schema = ramlObj.extractPayloadSchema(url, method);
     } catch (err) {
-        yield err;
+        yield makeError(url, method, null, err.toString());
     }
     try {
         example = ramlObj.extractPayloadExample(url, method);
     } catch (err) {
-        yield err;
+        yield makeError(url, method, null, "JSON parse: " + err.message);
     }
     if (schema && example) {
         for (var e of validate(schema, example)) {
-            yield e;
+            yield makeError(url, method, null, e.stack);
         }
     }
 }
@@ -38,16 +47,16 @@ function* validateResponse(url, method, status, ramlObj) {
     try {
         schema = ramlObj.extractResponseSchema(url, method, status);
     } catch (err) {
-        yield err;
+        yield makeError(url, method, status, err.toString());
     }
     try {
         example = ramlObj.extractResponseExample(url, method, status);
     } catch (err) {
-        yield err;
+        yield makeError(url, method, status, "JSON parse: " + err.message);
     }
     if (schema && example) {
         for (var e of validate(schema, example)) {
-            yield e;
+            yield makeError(url, method, null, e.stack);
         }
     }
 }
@@ -93,7 +102,10 @@ function validateExamles(ramlObj) {
     for (var err of validateRoutes(ramlObj)) {
         res.push(err);
     }
-    return res;
+    if (res.length > 0) {
+        return res;
+    }
+    return null;
 }
 
 module.exports = validateExamles;
