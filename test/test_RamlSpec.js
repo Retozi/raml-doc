@@ -1,7 +1,8 @@
 "use strict";
 
 var ramlSpec = require('../server/ramlSpec');
-require('should');
+
+var should = require('should');
 
 var FILE = './fixture/api.raml';
 
@@ -24,6 +25,11 @@ describe('RamlSpec', function() {
         schema.type.should.equal('object');
     });
 
+    it('extract null when no schema', function() {
+        var schema = s.extractResponseSchema('test2', 'get', 403);
+        should(null).equal(schema);
+    });
+
     it('extract payload schema', function() {
         var schema = s.extractPayloadSchema('test1', 'put');
         schema.type.should.equal('object');
@@ -37,5 +43,23 @@ describe('RamlSpec', function() {
     it('extract payload example', function() {
         var example = s.extractPayloadExample('test1', 'put');
         example.vignetteNrs.should.be.instanceOf(Array);
+    });
+
+    it('works without global types', function() {
+        var obj = ramlSpec.loadSync('./fixture/no-global-types.raml');
+        var schema = obj.extractPayloadSchema('test', 'post');
+        schema.should.be.instanceOf(Object);
+    });
+
+    it('throws error on invalid parse', function() {
+
+        try {
+            ramlSpec.loadSync('./fixture/invalid-raml.raml');
+
+        } catch (err) {
+            return;
+        }
+
+        should.fail("invalid raml parsing must fail");
     });
 });

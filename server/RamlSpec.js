@@ -1,25 +1,34 @@
 "use strict";
 
 const raml = require('raml-parser');
-const CSON = require('cson');
+const CSON = require('cson-parser');
 const terseJsonschema = require('terse-jsonschema');
 
 function parseSync(file) {
     var res;
+    var err;
     // async load of the RAML spec. THis does not block!
     raml.loadFile(file)
         .then(function(data) {
             res = data;
-        }).done();
+        })
+        ['catch'](function(e) {
+            err = e;
+        })
+        .done();
 
 
     //ugly block here with deasync. We need to block until the RAML is loaded,
     //otherwise we cannot proceed
     (function() {
-        while (!res) {
+        while (!res && !err) {
             require('deasync').sleep(100);
         }
     })();
+    // we throw the error after deasync, so we can catch it
+    if (err) {
+        throw err;
+    }
     return res;
 }
 
@@ -27,6 +36,9 @@ function parseSync(file) {
 // extract the global types from the schema. This is needed for correct validation
 function parseGlobalTypes(ramlObj) {
     var types = {};
+    if (!ramlObj.schemas) {
+        return null;
+    }
     ramlObj.schemas.forEach(function(s) {
         Object.keys(s).forEach(function(t) {
             types[t] = CSON.parse(s[t]);
@@ -94,6 +106,12 @@ function parseSchemaStr(schemaStr, globalTypes) {
     return terseJsonschema.parse(schema, globalTypes);
 }
 
+function noJsonDef() {
+    return {
+        schema: undefined,
+        example: undefined
+    };
+}
 
 function ramlSpec(data) {
     var _routes = parseRoutes(data);
@@ -103,20 +121,23 @@ function ramlSpec(data) {
         method = method.toLowerCase();
         var methods = getMethods(path, _routes);
         // along the way, you could always run into undefined...
-        return methods
+        var res = methods
             && methods[method]
             && methods[method].responses
             && methods[method].responses[status]
             && methods[method].responses[status].body
             && methods[method].responses[status].body["application/json"];
+
+        return res || noJsonDef();
     }
 
     function extractPayloadJsonDef(path, method) {
         var methods = getMethods(path, _routes);
-        return methods
+        var res = methods
             && methods[method]
             && methods[method].body
             && methods[method].body["application/json"];
+        return res || noJsonDef();
     }
 
     function parseIfSchemaStr(schemaStr) {
