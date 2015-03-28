@@ -20,6 +20,14 @@ describe('testRequest', function() {
             .promise();
     });
 
+    it('github meta validates with missing slash on uri', function() {
+        var SPEC = ramlSpec.loadSync('./fixture/github.raml');
+        var request = testRequest(SPEC)('https://api.github.com/');
+        return request.get('meta')
+            .expectBody(200)
+            .promise();
+    });
+
     it('wrong github fails', function() {
         var SPEC = ramlSpec.loadSync('./fixture/invalid-github.raml');
         var request = testRequest(SPEC)('https://api.github.com');
