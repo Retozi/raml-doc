@@ -9,6 +9,7 @@ var FILE = './fixture/api.raml';
 var INVALID_PAY = './fixture/unparseable-payload.raml';
 var INVALID_JSON = './fixture/unparseable-response.raml';
 var MISMATCH = './fixture/example-not-matching-schema.raml';
+var GITHUB = './fixture/github.raml';
 
 describe('validate examples', function() {
     it('valid does not produce errors', function() {
@@ -34,5 +35,12 @@ describe('validate examples', function() {
         var s = ramlSpec.loadSync(MISMATCH);
         var errs = validateExamples(s);
         errs.length.should.equal(1);
+        errs[0].message.should.equal("data.id: is the wrong type");
+    });
+
+    it('github schema is ok', function() {
+        var s = ramlSpec.loadSync(GITHUB);
+        var errs = validateExamples(s);
+        should(null).equal(errs);
     });
 });
