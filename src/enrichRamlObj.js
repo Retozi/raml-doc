@@ -1,4 +1,5 @@
 // We would like to add some handy attributes to the ramlObj methods
+"use strict";
 
 function order(a, b) {
     if (a.absUrl < b.absUrl) {
