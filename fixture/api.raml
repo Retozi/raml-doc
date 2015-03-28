@@ -76,15 +76,9 @@ schemas:
                             reason: 'MultiLangString'
 
 
-/test1:
-    put:
-        displayName: edit the vignette field of a LicensePlate
-        body:
-            example: |
-                {
-                    "vignetteNrs": ["123490334", "312483493"]
-                }
+/test1: !include ./test1.raml
 
-            schema: |
-
-                vignetteNrs: ['string']
+/test2:
+    /subtest2:
+        post:
+            displayName: "my post"

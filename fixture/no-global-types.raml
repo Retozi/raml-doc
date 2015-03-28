@@ -1,0 +1,12 @@
+#%RAML 0.8
+baseUri: http://test.fixture.ch:8082/parkingcard/
+title: RAML test-fixture
+version: 1
+protocols: [ HTTPS ]
+mediaType: application/json
+/test:
+    post:
+        body:
+            application/json:
+                schema: |
+                    id: 'integer'
