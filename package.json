@@ -16,7 +16,6 @@
     "raml-parser": "0.8.9",
     "bluebird": "2.9.x",
     "supertest": "0.15.x",
-    "deasync": "0.0.10",
     "methods": "1.x",
     "mocha": "2.2.x",
     "should": "5.2.x"
