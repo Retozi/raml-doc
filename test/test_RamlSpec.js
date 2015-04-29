@@ -7,11 +7,11 @@ var should = require('should');
 var FILE = './fixture/api.raml';
 
 describe('RamlSpec', function() {
-    var s = ramlSpec.loadSync(FILE);
-
+    var s;
     it('should fetch async', function() {
         return ramlSpec.loadAsync(FILE)
             .then(function(data) {
+                s = data;
                 data.getData().version.should.equal('1');
             });
     });
@@ -46,20 +46,11 @@ describe('RamlSpec', function() {
     });
 
     it('works without global types', function() {
-        var obj = ramlSpec.loadSync('./fixture/no-global-types.raml');
-        var schema = obj.extractPayloadSchema('test', 'post');
-        schema.should.be.instanceOf(Object);
+        ramlSpec.loadAsync('./fixture/no-global-types.raml')
+            .then(function(obj) {
+                var schema = obj.extractPayloadSchema('test', 'post');
+                schema.should.be.instanceOf(Object);
+            });
     });
 
-    it('throws error on invalid parse', function() {
-
-        try {
-            ramlSpec.loadSync('./fixture/invalid-raml.raml');
-
-        } catch (err) {
-            return;
-        }
-
-        should.fail("invalid raml parsing must fail");
-    });
 });

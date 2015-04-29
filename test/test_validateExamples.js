@@ -13,34 +13,44 @@ var GITHUB = './fixture/github.raml';
 
 describe('validate examples', function() {
     it('valid does not produce errors', function() {
-        var s = ramlSpec.loadSync(FILE);
-        var errs = validateExamples(s);
-        should(null).equal(errs);
+        ramlSpec.loadAsync(FILE)
+            .then(function(s) {
+                var errs = validateExamples(s);
+                should(null).equal(errs);
+            });
 
     });
 
     it('invalid payload description produces errors', function() {
-        var s = ramlSpec.loadSync(INVALID_PAY);
-        var errs = validateExamples(s);
-        errs.length.should.equal(2);
+        ramlSpec.loadAsync(INVALID_PAY)
+            .then(function(s) {
+                var errs = validateExamples(s);
+                errs.length.should.equal(2);
+            });
     });
 
     it('invalid response description produces errors', function() {
-        var s = ramlSpec.loadSync(INVALID_JSON);
-        var errs = validateExamples(s);
-        errs.length.should.equal(2);
+        ramlSpec.loadAsync(INVALID_JSON)
+            .then(function(s) {
+                var errs = validateExamples(s);
+                errs.length.should.equal(2);
+            });
     });
 
     it('schema does not match example', function() {
-        var s = ramlSpec.loadSync(MISMATCH);
-        var errs = validateExamples(s);
-        errs.length.should.equal(1);
-        errs[0].message.should.equal("data.id: is the wrong type");
+        ramlSpec.loadAsync(MISMATCH)
+            .then(function(s) {
+                var errs = validateExamples(s);
+                errs.length.should.equal(1);
+                errs[0].message.should.equal("data.id: is the wrong type");
+            });
     });
 
     it('github schema is ok', function() {
-        var s = ramlSpec.loadSync(GITHUB);
-        var errs = validateExamples(s);
-        should(null).equal(errs);
+        ramlSpec.loadAsync(GITHUB)
+            .then(function(s) {
+                var errs = validateExamples(s);
+                should(null).equal(errs);
+            });
     });
 });
