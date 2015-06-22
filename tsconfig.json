@@ -3,6 +3,13 @@
 		"target": "ES5",
 		"module": "commonjs",
 		"sourceMap": true,
-		"noImplicitAny": true
-	}
+		"noImplicitAny": true,
+        "outDir": "./build"
+	},
+    "files": [
+        "lib/ramlSpec",
+        "lib/ramlSpec_test",
+        "lib/terseJsonschema",
+        "lib/terseJsonschema_test"
+    ]
 }

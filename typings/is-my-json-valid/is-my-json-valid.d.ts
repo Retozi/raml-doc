@@ -4,9 +4,13 @@ declare module 'is-my-json-valid' {
     function validator(schema: Object): validator.Validate;
 
     module validator {
+        export interface Error {
+            field: string;
+            message: string;
+        }
         export interface Validate {
-            (json: Object): Object[];
-            errors: Object[];
+            (json: any): Error[];
+            errors: Error[];
         }
     }
 }

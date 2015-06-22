@@ -1,8 +1,7 @@
 /// <reference path="../typings/references.d.ts" />
-
 import raml = require('raml-parser');
 import CSON = require('cson-parser');
-var terseJsonschema = require('terse-jsonschema');
+import TerseJsonschema = require('./terseJsonschema');
 import validator = require('is-my-json-valid');
 import _ = require('lodash');
 
@@ -11,6 +10,15 @@ interface JsonBody {
         example?: string;
         parsedSchema?: ParsedSchema;
         parsedExample?: ParsedExample;
+}
+
+export function emptyJsonBody(): JsonBody {
+    return {
+        schema: null,
+        example: null,
+        parsedSchema: new ParsedSchema(null, null),
+        parsedExample: new ParsedExample(null)
+    }
 }
 
 interface Body {
@@ -65,20 +73,20 @@ class ParseResult {
 }
 
 
-class ParsedSchema extends ParseResult {
+export class ParsedSchema extends ParseResult {
     constructor(schemaStr: string, globalTypes?: GlobalTypes) {
         schemaStr = schemaStr || null;
         var result: Object = null;
         var error: ParseError = null;
         var schema: Object = null;
         try {
-            schema = CSON.parse(schemaStr);
+            schema = (schemaStr) ? CSON.parse(schemaStr): null;
         } catch(e) {
             error = new ParseError(ParseType.cson, e);
         }
-        if (!error) {
+        if (!error && schema) {
             try {
-                result = terseJsonschema.parse(schema, globalTypes)
+                result = TerseJsonschema.parse(<TerseJsonschema.Node> schema, globalTypes)
             } catch(e) {
                 error = new ParseError(ParseType.terseJson, e);
             }
@@ -87,12 +95,12 @@ class ParsedSchema extends ParseResult {
     }
 }
 
-class ParsedExample extends ParseResult {
+export class ParsedExample extends ParseResult {
     constructor(exampleStr: string) {
         var result: Object = null;
         var error: ParseError = null;
         try {
-            result = JSON.parse(exampleStr);
+            result = (exampleStr) ? JSON.parse(exampleStr): null;
         } catch(e) {
             error = new ParseError(ParseType.json, e);
         }
@@ -101,7 +109,7 @@ class ParsedExample extends ParseResult {
 }
 
 interface GlobalTypes {
-    [idx: string]: Object;
+    [idx: string]: TerseJsonschema.Node;
 }
 
 
@@ -112,8 +120,8 @@ function parseGlobalTypes(ramlObj: raml.Raml): GlobalTypes {
         return null;
     }
     ramlObj.schemas.forEach((s: raml.Schema): void => {
-        Object.keys(s).forEach((t: string):void => {
-            types[t] = CSON.parse(s[t]);
+        Object.keys(s).forEach((t: string): void => {
+            types[t] = <TerseJsonschema.Node> CSON.parse(s[t]);
         });
     });
     return types;
@@ -156,15 +164,16 @@ class RamlEnhancer {
     }
 
     private enhanceBody(body: Body) {
+        if (!body) {
+            return;
+        }
         var appJson = body['application/json'];
         appJson.parsedSchema = new ParsedSchema(appJson.schema, this.globalTypes);
         appJson.parsedExample = new ParsedExample(appJson.example);
     }
 
-    private enhanceMethod(method: Method) {
-        if (method.body) {
-            this.enhanceBody(method.body);
-        }
+    private enhanceMethod(method: Method): void {
+        this.enhanceBody(method.body);
         if (method.responses) {
             Object.keys(method.responses).forEach((status: string) => {
                 this.enhanceBody(method.responses[status].body);
@@ -172,14 +181,16 @@ class RamlEnhancer {
         }
     }
 
-    private enhanceResource(r: Resource, parentUrl: string) {
+    private enhanceResource(r: Resource, parentUrl: string): void {
         r.absoluteUri = parentUrl + r.relativeUri;
-        r.methods.forEach((m: Method) => this.enhanceMethod(m));
-        this.registerRoute(r.absoluteUri, r.methods);
+        if (r.methods) {
+            r.methods.forEach((m: Method) => this.enhanceMethod(m));
+            this.registerRoute(r.absoluteUri, r.methods);
+        }
         this.walk(r, r.absoluteUri);
     }
 
-    private walk(node: ResourceContaining, parentUrl: string) {
+    private walk(node: ResourceContaining, parentUrl: string): void {
         if (!node.resources) {
             return;
         }
@@ -188,7 +199,7 @@ class RamlEnhancer {
 }
 
 
-class RamlSpec {
+export class RamlSpec {
     private data: raml.Raml;
     private _globalTypes: GlobalTypes;
     private _routes: Route[];
@@ -208,32 +219,12 @@ class RamlSpec {
         return this._routes;
     }
 
-    extractResponseSchema(path: string, method: string, status: string) {
-        return this.extractResponseJsonBody(path, method, status).parsedSchema;
-    }
-
-    extractResponseExample(path: string, method: string, status: string) {
-        return this.extractResponseJsonBody(path, method, status).parsedExample;
-    }
-
-    extractPayloadSchema(path: string, method: string) {
-        return this.extractPayloadJsonDef(path, method).parsedSchema;
-    }
-
-    extractPayloadExample(path: string, method: string) {
-        return this.extractPayloadJsonDef(path, method).parsedExample;
-    }
-
     getMethods(path: string): Method[] {
         if (path[0] !== '/') {
             path = "/" + path;
         }
-        var pathRegex = "^" + path.replace('/', '\/') + "$";
-        pathRegex = pathRegex.replace(/\{[\w]+\}/, "[^\/]+");
-    
-        var pathRegexObj = new RegExp(pathRegex);
 
-        var route = _.find(this._routes, (r: Route) => pathRegexObj.test(r.url));
+        var route = _.find(this._routes, (r: Route) => r.url === path);
     
         if (route) {
             return route.methods || [];
@@ -247,21 +238,21 @@ class RamlSpec {
         return _.find(methods, (m: Method) => m.method === methodName);
     }
 
-    private extractResponseJsonBody(path: string, methodName: string, status: string): JsonBody {
+    extractResponseJsonBody(path: string, methodName: string, status: string): JsonBody {
         var method = this.getMethod(path, methodName);
         // along the way, you could always run into undefined...
         if (method && method.responses[status] && method.responses[status].body) {
-            return method.responses[status].body['application/json'] || {};
+            return method.responses[status].body['application/json'] || emptyJsonBody();
         }
-        return {}
+        return emptyJsonBody()
     }
 
-    private extractPayloadJsonDef(path: string, methodName: string): JsonBody {
+    extractPayloadJsonBody(path: string, methodName: string): JsonBody {
         var method = this.getMethod(path, methodName);
         if (method && method.body) {
-            return method.body['application/json'] || {};
+            return method.body['application/json'] || emptyJsonBody();
         }
-        return {};
+        return emptyJsonBody();
     }
 }
 
@@ -279,20 +270,11 @@ interface ValidationError {
     message: string;
 }
 
-class Validator {
-    spec: RamlSpec;
+export class ParseErrors {
     errors: ValidationError[];
-    constructor(spec: RamlSpec) {
-        this.spec = spec;
+    constructor() {
         this.errors = [];
     }
-    validate(): ValidationError[] {
-        this.spec.getRoutes().forEach((r: Route) => {
-            this.validateRoute(r);
-        });
-        return this.errors;
-    }
-
     private registerError(url: string, methodName: string, status: string, message: string) {
         this.errors.push({
             url: url,
@@ -301,44 +283,54 @@ class Validator {
             message: message
         });
     }
+    registerErrors(url: string, methodName: string, status: string, body: JsonBody): void {
+        if (body.parsedSchema.error) {
+            this.registerError(url, methodName, status, body.parsedSchema.error.toMessage());
+        }
+        if (body.parsedExample.error) {
+            this.registerError(url, methodName, status, body.parsedExample.error.toMessage());
+        }
+        if (body.parsedSchema.result && body.parsedExample.result) {
+            var errors = validate(body.parsedSchema.result, body.parsedExample.result);
+            errors.forEach((e: validator.Error) => {
+                this.registerError(url, methodName, status, `${e.field}: ${e.message}`);
+            });
+        }
+    }
+}
+
+
+export class Validator {
+    spec: RamlSpec;
+    parseErrors: ParseErrors;
+    constructor(spec: RamlSpec) {
+        this.spec = spec;
+        this.parseErrors = new ParseErrors();
+    }
+    validate(): ValidationError[] {
+        this.spec.getRoutes().forEach((r: Route) => {
+            this.validateRoute(r);
+        });
+        return this.parseErrors.errors;
+    }
 
     private validateRoute(r: Route): void {
         r.methods.forEach((method: Method) => {
             this.validatePayload(r.url, method.method);
-            Object.keys(method.responses).forEach((status: string) => {
+            Object.keys(method.responses || {}).forEach((status: string) => {
                 this.validateResponse(r.url, method.method, status);
             })
         });
     }
 
-    private registerErrors(
-        url: string,
-        methodName: string,
-        status: string,
-        schema: ParseResult,
-        example: ParseResult
-    ): void {
-        if (schema.error) {
-            this.registerError(url, methodName, status, schema.error.toMessage());
-        }
-        if (example.error) {
-            this.registerError(url, methodName, status, example.error.toMessage());
-        }
-        if (schema.result && schema.error) {
-            
-        }
-    }
-
     private validatePayload(url: string, methodName: string) {
-        var schema = this.spec.extractPayloadSchema(url, methodName);
-        var example = this.spec.extractPayloadSchema(url, methodName);
-        this.registerErrors(url, methodName, status, schema, example);
+        var body = this.spec.extractPayloadJsonBody(url, methodName);
+        this.parseErrors.registerErrors(url, methodName, null, body);
     }
 
     private validateResponse(url: string, methodName: string, status: string) {
-        var schema = this.spec.extractResponseSchema(url, methodName, status);
-        var example = this.spec.extractResponseSchema(url, methodName, status);
-        this.registerErrors(url, methodName, status, schema, example);
+        var body = this.spec.extractResponseJsonBody(url, methodName, status);
+        this.parseErrors.registerErrors(url, methodName, status, body);
     }
 }
 

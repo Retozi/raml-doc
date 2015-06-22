@@ -79,6 +79,6 @@ schemas:
 /test1: !include ./test1.raml
 
 /test2:
-    /subtest2:
+    /{id}:
         post:
             displayName: "my post"
