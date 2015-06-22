@@ -1,12 +1,10 @@
-"use strict";
-var watch = require("node-watch");
-var path = require("path");
-var fs = require('fs');
-var express = require('express');
-var ramlSpec = require('../lib/ramlSpec');
-var cheerio = require('cheerio');
-var validateExamples = require('../lib/validateExamples');
 
+import watch = require("node-watch");
+import path = require("path");
+import fs = require('fs');
+import express = require('express');
+import RamlSpec = require('../lib/RamlSpec');
+import cheerio = require('cheerio');
 
 function template() {
     return cheerio.load(fs.readFileSync(path.join(__dirname, 'index.html'), "utf8"));
@@ -68,33 +66,47 @@ function sendParseErrorToSocket(socket) {
 
 function sendDataToSocket(options) {
     return function(socket) {
-        ramlSpec.loadAsync(options.source)
+        RamlSpec.loadAsync(options.source)
             .then(sendRamlToSocket(socket, options.bundle))
             .fail(sendParseErrorToSocket(socket))
             .done();
     };
 }
 
-module.exports = function(options) {
+interface Options {
+    source: string;
+    bundle: string;
+}
 
-    var e = {};
-
-    e.listen = function(port) {
+export class Server {
+    options: Options;
+    constructor(options) {
+        this.options = options;
+    }
+    
+    listen(port: number) {
         var server = expressServer(port);
         var io = require('socket.io').listen(server);
 
         // send data the first time
-        io.on('connection', sendDataToSocket(options));
+        io.on('connection', this.sendDataToSocket());
 
         // send data whenever files change
-        watch(path.dirname(options.source), function(filename) {
+        watch(path.dirname(this.options.source), (filename: string) => {
             var ext = path.extname(filename);
             if (ext !== '.html' && ext !== '.js') {
-                sendDataToSocket(options)(io);
+                this.sendDataToSocket(this.options)(io);
             }
         });
+    }
 
-    };
-    return e;
+    sendDataToSocket() {
+        return (socket) => {
+            RamlSpec.loadAsync(this.options.source)
+                .then(sendRamlToSocket(socket, this.options.bundle))
+                .fail(sendParseErrorToSocket(socket))
+                .done();
+        };
+    }
+}
 
-};
