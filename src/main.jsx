@@ -3,7 +3,7 @@ var React = require('react');
 var Router = require('react-router');
 var Route = Router.Route;
 var Redirect = Router.Redirect;
-var parseOptions =require('./parseOptions');
+var parseOptions = require('./parseOptions');
 
 var App = require('./components/App');
 var ApiRoute = require('./components/ApiRoute');
@@ -25,7 +25,6 @@ var routes = (
         <Redirect from="/" to="/home" />
     </Route>
 );
-
 
 
 Router.run(routes, function (Handler) {

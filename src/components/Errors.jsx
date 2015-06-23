@@ -37,7 +37,7 @@ var Errors = React.createClass({
         });
     },
     render() {
-        if (!this.props.errors) {
+        if (!this.props.errors || this.props.errors.length === 0) {
             return null;
         }
         return (
