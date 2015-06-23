@@ -9,7 +9,7 @@ import socket = require('socket.io');
 import http = require('http');
 
 function template(): CheerioStatic {
-    return cheerio.load(fs.readFileSync(path.join(__dirname, 'index.html'), "utf8"));
+    return cheerio.load(fs.readFileSync(path.join(__dirname, 'base.html'), "utf8"));
 }
 
 function devHtml(port: number): string {
@@ -37,7 +37,7 @@ class ExpressServer {
     constructor(port: number) {
         var server = express();
 
-        server.use(express['static'](path.join(__dirname, '../build')));
+        server.use(express.static(path.join(__dirname)));
         server.get('/', function(req, res) {
             res.send(devHtml(port));
         });

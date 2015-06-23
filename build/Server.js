@@ -6,7 +6,7 @@ var RamlSpec = require('./RamlSpec');
 var cheerio = require('cheerio');
 var socket = require('socket.io');
 function template() {
-    return cheerio.load(fs.readFileSync(path.join(__dirname, 'index.html'), "utf8"));
+    return cheerio.load(fs.readFileSync(path.join(__dirname, 'base.html'), "utf8"));
 }
 function devHtml(port) {
     var $ = template();
@@ -25,7 +25,7 @@ function bundleHtml(ramlObj) {
 var ExpressServer = (function () {
     function ExpressServer(port) {
         var server = express();
-        server.use(express['static'](path.join(__dirname, '../build')));
+        server.use(express.static(path.join(__dirname)));
         server.get('/', function (req, res) {
             res.send(devHtml(port));
         });
