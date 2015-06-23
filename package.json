@@ -47,7 +47,7 @@
     "mocha": "npm run build && node ./node_modules/mocha/bin/mocha build/",
     "lint": "node --harmony tslint.js ./lib",
     "test": "npm run lint && npm run mocha",
-    "start": "node --harmony ./devServer.js"
+    "start": "npm run build && node --harmony ./devServer.js"
   },
   "main": "lib/index.js"
 }

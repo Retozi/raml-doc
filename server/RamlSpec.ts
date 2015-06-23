@@ -44,7 +44,7 @@ interface Resource extends raml.Resource {
     resources: Resource[];
 }
 
-interface Raml extends raml.Raml {
+export interface Raml extends raml.Raml {
     resources: Resource[];
 }
 
@@ -211,8 +211,8 @@ export class RamlSpec {
         this.data = data;
     }
 
-    getData(): raml.Raml {
-        return this.data;
+    getData(): Raml {
+        return <Raml> this.data;
     }
 
     getRoutes(): Route[] {

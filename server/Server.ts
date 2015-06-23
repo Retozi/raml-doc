@@ -3,14 +3,16 @@ import watch = require("node-watch");
 import path = require("path");
 import fs = require('fs');
 import express = require('express');
-import RamlSpec = require('../lib/RamlSpec');
+import RamlSpec = require('./RamlSpec');
 import cheerio = require('cheerio');
+import socket = require('socket.io');
+import http = require('http');
 
-function template() {
+function template(): CheerioStatic {
     return cheerio.load(fs.readFileSync(path.join(__dirname, 'index.html'), "utf8"));
 }
 
-function devHtml(port) {
+function devHtml(port: number): string {
     var $ = template();
     $('body').prepend('<script type="application/json" id="dev-server"/>');
     $('#dev-server').text(JSON.stringify({'socket': 'http://localhost:' + port}));
@@ -18,7 +20,7 @@ function devHtml(port) {
     return $.html();
 }
 
-function bundleHtml(ramlObj) {
+function bundleHtml(ramlObj: RamlSpec.Raml): string {
     var $ = template();
     $('body').prepend('<script type="application/json" id="raml-doc"/>');
     $('#raml-doc').text(JSON.stringify({raml: ramlObj}));
@@ -28,85 +30,76 @@ function bundleHtml(ramlObj) {
     return $.html();
 }
 
-function expressServer(port) {
-    var app = express();
 
-    app.use(express['static'](path.join(__dirname, '../build')));
+class ExpressServer {
+    server: http.Server;
 
-    app.get('/', function(req, res) {
-        res.send(devHtml(port));
-    });
+    constructor(port: number) {
+        var server = express();
 
-    return app.listen(port);
-}
-
-function sendRamlToSocket(socket, bundle) {
-    return function(ramlSpecObj) {
-        var errors = validateExamples(ramlSpecObj);
-        var data = ramlSpecObj.getData();
-        socket.emit("raml", {raml: data, validationErrors: errors});
-
-        if (bundle) {
-            fs.writeFile(bundle, bundleHtml(data), function(err) {
-                if (err) {
-                    console.log(err);
-                }
-            });
-        }
-    };
-}
-
-function sendParseErrorToSocket(socket) {
-    return function(err) {
-        // convert the error into the same format as a schema validation error
-        var errors = [{url: "YAML Parse Error", message: JSON.stringify(err)}];
-        socket.emit("raml", {raml: null, validationErrors: errors});
-    };
-}
-
-function sendDataToSocket(options) {
-    return function(socket) {
-        RamlSpec.loadAsync(options.source)
-            .then(sendRamlToSocket(socket, options.bundle))
-            .fail(sendParseErrorToSocket(socket))
-            .done();
-    };
+        server.use(express['static'](path.join(__dirname, '../build')));
+        server.get('/', function(req, res) {
+            res.send(devHtml(port));
+        });
+    
+        this.server = server.listen(port);
+    }
 }
 
 interface Options {
     source: string;
-    bundle: string;
+    bundle?: string;
 }
 
 export class Server {
-    options: Options;
-    constructor(options) {
+    private options: Options;
+    server: ExpressServer;
+    io: SocketIO.Server;
+    port: number;
+ 
+    constructor(options: Options) {
         this.options = options;
     }
     
-    listen(port: number) {
-        var server = expressServer(port);
-        var io = require('socket.io').listen(server);
-
+    listen(port: number): void {
+        this.port = port;
+        this.server = new ExpressServer(this.port);
+        this.io = socket.listen(this.server.server);
         // send data the first time
-        io.on('connection', this.sendDataToSocket());
+        this.io.on('connection', () => this.sendDataToSocket());
 
         // send data whenever files change
         watch(path.dirname(this.options.source), (filename: string) => {
             var ext = path.extname(filename);
             if (ext !== '.html' && ext !== '.js') {
-                this.sendDataToSocket(this.options)(io);
+                this.sendDataToSocket();
             }
         });
     }
 
-    sendDataToSocket() {
-        return (socket) => {
-            RamlSpec.loadAsync(this.options.source)
-                .then(sendRamlToSocket(socket, this.options.bundle))
-                .fail(sendParseErrorToSocket(socket))
-                .done();
-        };
+    private writeBundle(data: RamlSpec.Raml): void {
+        if (this.options.bundle) {
+            fs.writeFile(this.options.bundle, bundleHtml(data), function(err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        }
+    }
+
+    private sendDataToSocket(): void {
+        RamlSpec.loadAsync(this.options.source)
+            .then((spec: RamlSpec.RamlSpec) => {
+                var data = spec.getData();
+                var errors = new RamlSpec.Validator(spec).validate();
+                this.io.emit("raml", {raml: data, validationErrors: errors});
+                this.writeBundle(data);
+            })
+            .fail((e: Error) => {
+                var errors = [{url: "YAML Parse Error", message: JSON.stringify(e)}];
+                this.io.emit("raml", {raml: null, validationErrors: errors});
+            })
+            .done();
     }
 }
 

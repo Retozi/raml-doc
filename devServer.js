@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var config = require('./makeWebpackConfig')('dev');
-var devServer = require('./server/server');
+var Server = require('./build/Server');
 
 var server = new WebpackDevServer(webpack(config), {
     // webpack-dev-server options
@@ -23,4 +23,4 @@ var server = new WebpackDevServer(webpack(config), {
 server.listen(8080, "localhost", function() {});
 
 // lets fire up a dev server
-devServer({source: './fixture/api.raml'}).listen(8081);
+new Server.Server({source: './fixture/api.raml'}).listen(8081);
