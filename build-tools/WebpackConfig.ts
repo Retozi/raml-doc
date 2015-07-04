@@ -1,63 +1,63 @@
 /// <reference path="../typings/references.d.ts" />
 
 import webpack = require("webpack");
+import walkSync = require('walk-sync');
 import HtmlWebpackPlugin = require('html-webpack-plugin');
 import path = require('path');
+import _ = require('lodash');
 
 export var PROJECT_ROOT = path.dirname(__dirname);
 
-export interface EntriesObject {
-    [idx: string]: string;
+interface PluginConfig {
+    environment: string;
+    nodeSourceMaps: boolean;
+    hotReload: boolean;
+    minify: boolean;
 }
 
-export interface Externals {
-    [idx: string]: string
+function matches(name: string, patterns: RegExp[]): boolean {
+    return patterns.some((pattern: RegExp) => !!name.match(pattern));
 }
 
-export interface Options {
-    entry?: string[] | EntriesObject;
-    nodeSourceMaps?: boolean;
-    environment?: string;
-    hotReload?: boolean;
-    minify?: boolean;
-    longTermCaching: boolean;
-    outputDir?: string;
-    assetsDir?: string;
-    generateIndexHTML?: boolean;
-    externals?: Externals;
-    sourceMaps?: string;
-}
+export class TestEntriesCollector {
+    private dirname: string;
+    private includes: RegExp[];
+    private excludes: RegExp[];
 
-function getOutputDir(options: Options): string {
-    if (options.outputDir) {
-        return options.outputDir;
+    constructor(dirname: string, includes?: RegExp[], excludes?: RegExp[]) {
+        this.dirname = dirname;
+        this.includes = includes;
+        this.excludes = excludes || [];
     }
-    var baseDir = 'build';
-    return options.assetsDir ? path.join(baseDir, options.assetsDir) : baseDir;
+
+    private isEntryPoint(filename: string): boolean {
+        return (
+            filename.match(/_test.ts$/) &&
+            !matches(filename, this.excludes) &&
+            (this.includes === undefined || matches(filename, this.includes))
+        );
+    }
+
+    collect(): webpack.EntriesObject {
+        var entries: webpack.EntriesObject = {};
+
+        walkSync(this.dirname).forEach((filename: string) => {
+            var absFileName = path.resolve(PROJECT_ROOT, path.join(this.dirname, filename));
+
+            if (this.isEntryPoint(filename)) {
+                var entryPointName = absFileName.replace(PROJECT_ROOT + path.sep, '').replace(/.ts$/, '');
+                entries[entryPointName] = absFileName;
+            }
+        });
+        return entries;
+    }
 }
 
-function getFilename(options: Options) {
-    if (options.entry) {
-        return '[name].js';
-    }
-    return 'bundle' + (options.longTermCaching ? '-[hash]' : '') + '.js';
+export function getPath(relativeDir: string): string {
+    return path.join(PROJECT_ROOT, relativeDir);
 }
 
-function getEntry(options: Options): string[] | Object {
-    if (options.entry) {
-        return options.entry;
-    }
-    var entry = ["./parkingcard-app/src/main.ts"];
-
-    // prepend dev server if hotReload is enabled
-    if (options.hotReload) {
-        entry.unshift("webpack/hot/dev-server");
-        entry.unshift("webpack-dev-server/client?https://localhost:8081");
-    }
-    return entry;
-}
-
-function getPlugins(options: Options): any[] {
+export function getPlugins(options: PluginConfig): any[] {
     var plugins: any[] = [];
 
     if (options.nodeSourceMaps) {
@@ -80,28 +80,12 @@ function getPlugins(options: Options): any[] {
         plugins.push(new webpack.optimize.DedupePlugin());
         plugins.push(new webpack.optimize.UglifyJsPlugin());
     }
-
-    if (options.generateIndexHTML) {
-        plugins.push(new HtmlWebpackPlugin({
-            template: path.resolve('parkingcard-app/index.html')
-        }));
-    }
-
     return plugins;
 }
 
-
-export function makeConfig(options: Options): Object {
+export function makeBase(): webpack.Config {
     return {
-        entry: getEntry(options),
-        output: {
-            path: path.join(PROJECT_ROOT, getOutputDir(options)),
-            filename: getFilename(options),
-            publicPath: '/' + (options.assetsDir ? options.assetsDir + '/' : '')
-        },
-        externals: options.externals,
-        plugins: getPlugins(options),
-        devtool: options.sourceMaps || null,
+        entry: null,
         module: {
             loaders: [
                 {
@@ -119,5 +103,5 @@ export function makeConfig(options: Options): Object {
         resolve: {
             extensions: ["", ".js", '.ts']
         }
-    };
-};
+    }
+}

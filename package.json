@@ -46,8 +46,8 @@
     "minimist": "^1.1.1"
   },
   "scripts": {
-    "build-server": "node ./node_modules/typescript/bin/tsc.js -project ./",
-    "mocha-server": "rm -rf test-build && node runTs.js build-tools/build.ts test-server && node ./node_modules/mocha/bin/mocha",
+    "build-server": "node runTs.js build-tools/build.ts prod-server",
+    "mocha": "rm -rf test-build && node runTs.js build-tools/build.ts test-server && node ./node_modules/mocha/bin/mocha",
     "lint": "node runTs.js tslint.ts ./server ./build-tools",
     "test": "npm run lint && npm run mocha",
     "start": "npm run build && node --harmony ./devServer.js"

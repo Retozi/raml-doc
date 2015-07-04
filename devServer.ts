@@ -1,6 +1,8 @@
-var webpack = require('webpack');
-var WebpackDevServer = require('webpack-dev-server');
-var config = require('./makeWebpackConfig')('dev');
+/// <reference path="./typings/references.d.ts" />
+
+import webpack = require('webpack');
+import WebpackDevServer = require('webpack-dev-server');
+import config = require('./build-tools/webpack-dev-client.config');
 var Server = require('./build/Server');
 
 var server = new WebpackDevServer(webpack(config), {

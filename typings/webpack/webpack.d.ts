@@ -1,12 +1,12 @@
 
 declare module "webpack" {
-    interface Compiler {
-        run(cb: (err: webpack.Error, stats: webpack.Stats) => void): void;
-
-    }
-    function webpack(opts: any): Compiler;
+    function webpack(opts: any): webpack.Compiler;
 
     module webpack {
+        interface Compiler {
+            run(cb: (err: webpack.Error, stats: webpack.Stats) => void): void;
+
+        }
         interface Error {
             stack: string;
             details: string;
@@ -65,6 +65,54 @@ declare module "webpack" {
             callback(error: any, content?: NodeBuffer, sourceMap?: Object): void;
         }
 
+        interface EntriesObject {
+            [idx: string]: string | string[];
+        }
+
+        interface Externals {
+            [idx: string]: string;
+        }
+        interface Config {
+            entry: string[] | EntriesObject;
+            context?: string;
+            output?: OutputConfig;
+            module?: ModuleConfig;
+            resolve?: ResolveConfig;
+            plugins?: any[];
+            externals?: Externals;
+            devtool?: string;
+
+        }
+
+        interface OutputConfig {
+            filename: string;
+            path?: string;
+            chunkFilename?: string;
+            sourceMapFilename?: string;
+            publicPath?: string;
+        }
+
+        interface ModuleConfig {
+            loaders?: LoaderConfig[];
+            preLoader?: LoaderConfig[];
+            postLoaders?: LoaderConfig[];
+            noParse?: RegExp[];
+        }
+
+        interface LoaderConfig {
+            test: LoaderCondition;
+            exclude?: LoaderCondition;
+            include?: LoaderCondition;
+            loader?: string;
+            loaders?: string[];
+        }
+
+        type LoaderCondition = RegExp;
+
+        interface ResolveConfig {
+            extensions?: string[];
+
+        }
         interface SourceMap {
             version: number;
             sources: string[];

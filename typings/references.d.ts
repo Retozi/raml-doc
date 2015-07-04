@@ -15,3 +15,4 @@
 /// <reference path="./tslint/tslint.d.ts" />
 /// <reference path="./object-assign/object-assign.d.ts" />
 /// <reference path="./minimist/minimist.d.ts" />
+/// <reference path="./webpack-dev-server/webpack-dev-server.d.ts" />
