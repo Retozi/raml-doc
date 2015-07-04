@@ -4,6 +4,7 @@ import webpack = require("webpack");
 import walkSync = require('walk-sync');
 import HtmlWebpackPlugin = require('html-webpack-plugin');
 import path = require('path');
+import fs = require('fs');
 import _ = require('lodash');
 
 export var PROJECT_ROOT = path.dirname(__dirname);
@@ -82,6 +83,19 @@ export function getPlugins(options: PluginConfig): any[] {
     }
     return plugins;
 }
+
+export function collectNodeModules(): webpack.Externals {
+    var externals: webpack.Externals = {};
+
+    fs.readdirSync('./node_modules')
+        .filter((x: string): boolean => ['.bin'].indexOf(x) === -1)
+        .forEach((mod: string): void => {
+            externals[mod] = 'commonjs ' + mod;
+        });
+
+    return externals;
+}
+
 
 export function makeBase(): webpack.Config {
     return {

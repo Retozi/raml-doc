@@ -81,6 +81,8 @@ declare module "webpack" {
             plugins?: any[];
             externals?: Externals;
             devtool?: string;
+            target?: string;
+            node?: any;
 
         }
 

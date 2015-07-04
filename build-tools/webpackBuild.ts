@@ -32,6 +32,7 @@ function handleWarnings(warnings: string[]): void {
 }
 
 function runCompiler(config: Object): void {
+    console.log(config)
     var compiler = webpack(config);
 
     compiler.run(function(err: webpack.Error, stats: webpack.Stats): void {
