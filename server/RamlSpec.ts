@@ -1,7 +1,7 @@
 /// <reference path="../typings/references.d.ts" />
 import raml = require('raml-parser');
 import CSON = require('cson-parser');
-import TerseJsonschema = require('./terseJsonschema');
+import TerseJsonschema = require('./TerseJsonschema');
 import validator = require('is-my-json-valid');
 import _ = require('lodash');
 
@@ -153,7 +153,7 @@ class RamlEnhancer {
         this.data = data;
         this.globalTypes = globalTypes;
         this.routes = [];
-        // cast data as enhanced Raml, 
+        // cast data as enhanced Raml,
         this.walk(<Raml> data, '');
     }
 
@@ -225,7 +225,7 @@ export class RamlSpec {
         }
 
         var route = _.find(this._routes, (r: Route) => r.url === path);
-    
+
         if (route) {
             return route.methods || [];
         } else {

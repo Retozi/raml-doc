@@ -1,3 +1,5 @@
+/// <reference path="../typings/references.d.ts" />
+require('source-map-support').install();
 import TerseJsonschema = require('./TerseJsonschema');
 import chai = require('chai');
 

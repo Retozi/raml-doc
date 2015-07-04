@@ -152,7 +152,7 @@ function parseObject(source: ObjectNode , defs: TypeDefs): JsonschemaType {
     return obj;
 }
 
-function parseArray(array: Node[] | string[], defs: TypeDefs): JsonschemaNode {
+export function parseArray(array: Node[] | string[], defs: TypeDefs): JsonschemaNode {
     if (array.length === 0) {
         throw new Error("array must be length > 0");
     }

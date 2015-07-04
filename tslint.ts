@@ -1,14 +1,16 @@
-var walkSync = require('walk-sync');
-var Linter = require('tslint');
-var fs = require('fs');
-var path = require('path');
+/// <reference path="./typings/references.d.ts" />
+
+import walkSync = require('walk-sync');
+import Linter = require('tslint');
+import fs = require('fs');
+import path = require('path');
 var errorCount = 0;
 var fileWithErrorsCount = 0;
 var fileCount = 0;
 
-function lintFile(fileName) {
+function lintFile(fileName: string) {
     var configuration = require('./tslint.json');
-    var options = {
+    var options: tslint.ILinterOptions = {
         configuration: configuration,
         formatter: 'prose',
         rulesDirectory: null,
@@ -18,8 +20,8 @@ function lintFile(fileName) {
     return linter.lint();
 }
 
-function lintDir(dirName) {
-    walkSync(dirName).forEach(function(fileName) {
+function lintDir(dirName: string): void {
+    walkSync(dirName).forEach((fileName: string): void => {
         fileName = path.resolve(__dirname, dirName, fileName);
         if (fileName.match(/.*\.ts$/)) {
             var res = lintFile(fileName);
@@ -36,11 +38,11 @@ function lintDir(dirName) {
     });
 }
 
-process.argv.slice(2).forEach(function(dirName) {
+process.argv.slice(2).forEach(function(dirName): void {
     lintDir(dirName);
 });
 
-console.log('tslint: ' + errorCount + ' errors total. ' + fileCount + ' files total, ' + fileWithErrorsCount + ' have errors.');
+console.log(`tslint: ${errorCount} errors total. ${fileCount} files total, ${fileWithErrorsCount} have errors.`);
 
 if (errorCount > 0) {
     throw Error('there are linting errors')
