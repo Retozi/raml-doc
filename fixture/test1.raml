@@ -7,6 +7,13 @@ put:
             }
 
         schema: |
+            type: 'object'
+            properties:
+                vignetteNrs:
+                    type: array
+                    items:
+                        type: string
+
             vignetteNrs: [ 'string' ]
     responses:
         200:
@@ -14,5 +21,7 @@ put:
                 example: |
                     {"hello": "world"}
                 schema: |
-                    hello: string
+                    type: object
+                    properties:
+                        hello: {type: string}
 

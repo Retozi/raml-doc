@@ -1,5 +1,8 @@
+require('./AppStyles.styl');
 import React = require('react');
 import RamlSpec = require('../../server/RamlSpec');
+import Sidebar = require('./Sidebar');
+import Content = require('./Content');
 
 export interface Props {
     socket?: string;
@@ -34,8 +37,15 @@ export class Component extends React.Component<Props, State> {
             socket.on("raml", (d: State) => this.setRamlState(d.raml, d.validationErrors));
         }
     }
+
     render(): React.ReactNode {
-        console.log(this.props.raml, this.state.raml)
-        return React.createElement('div', {className: "container"});
+        var raml = this.props.raml || this.state.raml;
+        if (!raml) {
+            return null;
+        }
+        return React.createElement('div', {className: "raml-doc"},
+            Sidebar.Factory({raml: raml}),
+            Content.Factory({raml: raml})
+        );
     }
 }

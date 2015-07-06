@@ -4,6 +4,41 @@ title: RAML test-fixture
 version: 1
 protocols: [ HTTPS ]
 mediaType: application/json
+documentation:
+    - title: About this Specification
+      content: |
+        ## Markdown
+        hello hello omg
+
+schemas:
+    - Datetime: |
+          type: 'string'
+          pattern: '^\\d{4}-[0-1]\\d{1}-[0-3]\\d{1}T[0-2]\\d{1}:[0-5]\\d{1}(:[0-5]\\d{1})?Z$'
+      Address: |
+        type: object
+        description: an address that allwos for either a company or a private person
+        properties:
+            gender:
+                type: integer
+            company1:
+                type: string
+            company2:
+                type: string
+            firstName:
+                type: string
+            lastName:
+                type: string
+            street1:
+                type: string
+            street2:
+                type: string
+            zipCode:
+                type: string
+            city:
+                type: string
+            countryId:
+                type: string
+        required: ['gender', 'street1', 'zipCode', 'city', 'countryId']
 
 /auth-token:
     get:

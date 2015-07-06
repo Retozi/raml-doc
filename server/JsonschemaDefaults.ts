@@ -6,6 +6,9 @@ export function addDefaults(schema: Object) {
 }
 
 function parseNode(node: any) {
+    if (_.isObject(node) && !node.type && !node.$ref) {
+        throw Error("jsonschema object must either have a type or a ref");
+    }
     if (node.type === 'object') {
         node.additionalProperties = false;
         node.required = Object.keys(node.properties);

@@ -18,3 +18,5 @@
 /// <reference path="./webpack-dev-server/webpack-dev-server.d.ts" />
 /// <reference path="./react/react.d.ts" />
 /// <reference path="./js-yaml/js-yaml.d.ts" />
+/// <reference path="./marked/marked.d.ts" />
+/// <reference path="./jsonschema/jsonschema.d.ts" />

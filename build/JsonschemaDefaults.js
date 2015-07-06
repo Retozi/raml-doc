@@ -24,4 +24,3 @@ function parseNode(node) {
     }
     return;
 }
-//# sourceMappingURL=JsonschemaDefaults.js.map

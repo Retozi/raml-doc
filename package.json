@@ -49,7 +49,7 @@
     "mocha": "rm -rf test-build && node runTs.js build-tools/tscBuild.ts test-server && node ./node_modules/mocha/bin/mocha",
     "lint": "node runTs.js tslint.ts ./server ./build-tools",
     "test": "npm run lint && npm run mocha",
-    "start": "npm run build && node --harmony ./devServer.js"
+    "start": "npm run build-server && node runTs.js ./devServer.ts"
   },
   "main": "build/Server.js"
 }

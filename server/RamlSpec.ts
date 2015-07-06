@@ -38,11 +38,13 @@ interface Method extends raml.Method {
     responses: Responses;
 }
 
-interface Resource extends raml.Resource {
+export interface Resource extends raml.Resource {
     absoluteUri: string;
     methods: Method[];
     resources: Resource[];
 }
+
+export type Documentation = raml.Documentation;
 
 export interface Raml extends raml.Raml {
     parsedSchemas: GlobalTypes;
@@ -107,7 +109,7 @@ export class ParsedExample extends ParseResult {
     }
 }
 
-interface GlobalTypes {
+export interface GlobalTypes {
     [idx: string]: Object;
 }
 
