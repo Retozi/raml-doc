@@ -8,8 +8,7 @@ var config: TsConfig.Config = {
         outDir: "./test-build"
     },
     files: [
-        './server/RamlSpec_test.ts',
-        './server/TerseJsonschema_test.ts'
+        './server/RamlSpec_test.ts'
     ]
 }
 

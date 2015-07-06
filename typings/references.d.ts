@@ -17,3 +17,4 @@
 /// <reference path="./minimist/minimist.d.ts" />
 /// <reference path="./webpack-dev-server/webpack-dev-server.d.ts" />
 /// <reference path="./react/react.d.ts" />
+/// <reference path="./js-yaml/js-yaml.d.ts" />

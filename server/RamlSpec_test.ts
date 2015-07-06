@@ -77,7 +77,7 @@ describe('RamlSpec', function(): void {
 
 
 describe('ParseErrors', function(): void {
-    it('should parse a json errorr', function(): void {
+    it('should parse a json error', function(): void {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
         body.parsedExample = new RamlSpec.ParsedExample('{"hello": "world}');
@@ -86,36 +86,33 @@ describe('ParseErrors', function(): void {
 
     })
 
-    it('should parse a cson error', function(): void {
+    it('should parse invalid yaml schema error', function(): void {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
         body.parsedExample = new RamlSpec.ParsedSchema(
             "key: 'string"
         );
         errors.registerErrors('url', 'method', 'status', body);
-        expect(errors.errors[0].message).to.equal("cson parsing error: missing '");
-
-    })
-
-    it('should parse a terseJsonschema error', function(): void {
-        var errors = new RamlSpec.ParseErrors();
-        var body = RamlSpec.emptyJsonBody();
-        body.parsedSchema = new RamlSpec.ParsedSchema("key: 'stri'");
-        errors.registerErrors('url', 'method', 'status', body);
-        expect(errors.errors[0].message).to.equal("terseJson parsing error: Type is not defined: stri");
+        expect(errors.errors[0].message).to.contain("yaml parsing error:");
 
     })
 
     it('should parse a validation error', function(): void {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
-        body.parsedSchema = new RamlSpec.ParsedSchema("key: 'string'");
-        body.parsedExample = new RamlSpec.ParsedExample('{"key": 1}');
+        body.parsedSchema = new RamlSpec.ParsedSchema(`
+            type: object
+            properties:
+                key:
+                    type: 'number'
+        `);
+        body.parsedExample = new RamlSpec.ParsedExample('{"key": "test"}');
         errors.registerErrors('url', 'method', 'status', body);
         expect(errors.errors[0].message).to.equal("data.key: is the wrong type");
 
     })
 });
+
 
 describe('Validator', function(): void {
     it('should validate a schema', function(done) {
@@ -127,4 +124,4 @@ describe('Validator', function(): void {
                 done();
             }).done();
     })
-})
+});

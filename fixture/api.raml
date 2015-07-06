@@ -5,42 +5,6 @@ version: 1
 protocols: [ HTTPS ]
 mediaType: application/json
 
-schemas:
-    - MultiLangString: |
-        # a translated string
-        de: 'string'
-        fr: 'string'
-        it: 'string'
-
-      Error: |
-        # a generic error
-        code: 'integer'
-        message:
-            de: 'string'
-            fr: 'string'
-            it: 'string'
-
-      Address: |
-        #an address that allows for either a company or a private person
-        gender: 'integer'
-        company1: 'string'
-        company2: 'string'
-        firstName: 'string'
-        lastName: 'string'
-        street1: 'string'
-        street2: 'string'
-        zipCode: 'string'
-        city: 'string'
-        countryId: 'string'
-
-        $required: 'gender street1 zipCode city countryId'
-
-      Datetime: |
-        # ISO 8601 datestime
-          $raw:
-              type: 'string'
-              pattern: '^\\d{4}-[0-1]\\d{1}-[0-3]\\d{1}T[0-2]\\d{1}:[0-5]\\d{1}(:[0-5]\\d{1})?Z$'
-
 /auth-token:
     get:
         displayName: get an auth-token
@@ -62,18 +26,6 @@ schemas:
 
             403:
                 description: Account not verified or banned
-                body:
-                    application/json:
-                        example: |
-                            {
-                                "reason": {
-                                    "de": "Account noch nicht verifiziert",
-                                    "fr": "[fr text]",
-                                    "it": "[it text]"
-                                }
-                            }
-                        schema: |
-                            reason: 'MultiLangString'
 
 
 /test1: !include ./test1.raml

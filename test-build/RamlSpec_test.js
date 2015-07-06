@@ -62,32 +62,25 @@ describe('RamlSpec', function () {
     });
 });
 describe('ParseErrors', function () {
-    it('should parse a json errorr', function () {
+    it('should parse a json error', function () {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
         body.parsedExample = new RamlSpec.ParsedExample('{"hello": "world}');
         errors.registerErrors('url', 'method', 'status', body);
         expect(errors.errors[0].message).to.equal("json parsing error: Unexpected end of input");
     });
-    it('should parse a cson error', function () {
+    it('should parse invalid yaml schema error', function () {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
         body.parsedExample = new RamlSpec.ParsedSchema("key: 'string");
         errors.registerErrors('url', 'method', 'status', body);
-        expect(errors.errors[0].message).to.equal("cson parsing error: missing '");
-    });
-    it('should parse a terseJsonschema error', function () {
-        var errors = new RamlSpec.ParseErrors();
-        var body = RamlSpec.emptyJsonBody();
-        body.parsedSchema = new RamlSpec.ParsedSchema("key: 'stri'");
-        errors.registerErrors('url', 'method', 'status', body);
-        expect(errors.errors[0].message).to.equal("terseJson parsing error: Type is not defined: stri");
+        expect(errors.errors[0].message).to.contain("yaml parsing error:");
     });
     it('should parse a validation error', function () {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
-        body.parsedSchema = new RamlSpec.ParsedSchema("key: 'string'");
-        body.parsedExample = new RamlSpec.ParsedExample('{"key": 1}');
+        body.parsedSchema = new RamlSpec.ParsedSchema("\n            type: object\n            properties:\n                key:\n                    type: 'number'\n        ");
+        body.parsedExample = new RamlSpec.ParsedExample('{"key": "test"}');
         errors.registerErrors('url', 'method', 'status', body);
         expect(errors.errors[0].message).to.equal("data.key: is the wrong type");
     });

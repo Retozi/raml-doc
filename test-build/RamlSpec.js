@@ -6,25 +6,23 @@ var __extends = this.__extends || function (d, b) {
 };
 /// <reference path="../typings/references.d.ts" />
 var raml = require('raml-parser');
-var CSON = require('cson-parser');
-var TerseJsonschema = require('./TerseJsonschema');
+var yaml = require('js-yaml');
+var JsonschemaDefaults = require('./JsonschemaDefaults');
 var validator = require('is-my-json-valid');
 var _ = require('lodash');
 function emptyJsonBody() {
     return {
         schema: null,
         example: null,
-        parsedSchema: new ParsedSchema(null, null),
+        parsedSchema: new ParsedSchema(null),
         parsedExample: new ParsedExample(null)
     };
 }
 exports.emptyJsonBody = emptyJsonBody;
 var ParseType;
 (function (ParseType) {
-    ParseType[ParseType["cson"] = 1] = "cson";
+    ParseType[ParseType["yaml"] = 1] = "yaml";
     ParseType[ParseType["json"] = 2] = "json";
-    ParseType[ParseType["terseJson"] = 3] = "terseJson";
-    ParseType[ParseType["yaml"] = 4] = "yaml";
 })(ParseType || (ParseType = {}));
 var ParseError = (function () {
     function ParseError(type, error) {
@@ -45,24 +43,21 @@ var ParseResult = (function () {
 })();
 var ParsedSchema = (function (_super) {
     __extends(ParsedSchema, _super);
-    function ParsedSchema(schemaStr, globalTypes) {
+    function ParsedSchema(schemaStr) {
         schemaStr = schemaStr || null;
+        if (!schemaStr) {
+            _super.call(this, null, null);
+            return;
+        }
         var result = null;
         var error = null;
         var schema = null;
         try {
-            schema = (schemaStr) ? CSON.parse(schemaStr) : null;
+            result = (schemaStr) ? yaml.load(schemaStr) : null;
+            JsonschemaDefaults.addDefaults(result);
         }
         catch (e) {
-            error = new ParseError(ParseType.cson, e);
-        }
-        if (!error && schema) {
-            try {
-                result = TerseJsonschema.parse(schema, globalTypes);
-            }
-            catch (e) {
-                error = new ParseError(ParseType.terseJson, e);
-            }
+            error = new ParseError(ParseType.yaml, e);
         }
         _super.call(this, result, error);
     }
@@ -93,7 +88,7 @@ function parseGlobalTypes(ramlObj) {
     }
     ramlObj.schemas.forEach(function (s) {
         Object.keys(s).forEach(function (t) {
-            types[t] = CSON.parse(s[t]);
+            types[t] = yaml.load(s[t]);
         });
     });
     return types;
@@ -106,12 +101,12 @@ var Route = (function () {
     return Route;
 })();
 var RamlEnhancer = (function () {
-    function RamlEnhancer(data, globalTypes) {
+    function RamlEnhancer(data) {
         this.data = data;
-        this.globalTypes = globalTypes;
+        this.data.parsedSchemas = parseGlobalTypes(data);
         this.routes = [];
         // cast data as enhanced Raml,
-        this.walk(data, '');
+        this.walk(this.data, '');
     }
     RamlEnhancer.prototype.registerRoute = function (url, methods) {
         if (methods) {
@@ -123,7 +118,7 @@ var RamlEnhancer = (function () {
             return;
         }
         var appJson = body['application/json'];
-        appJson.parsedSchema = new ParsedSchema(appJson.schema, this.globalTypes);
+        appJson.parsedSchema = new ParsedSchema(appJson.schema);
         appJson.parsedExample = new ParsedExample(appJson.example);
     };
     RamlEnhancer.prototype.enhanceMethod = function (method) {
@@ -155,8 +150,7 @@ var RamlEnhancer = (function () {
 })();
 var RamlSpec = (function () {
     function RamlSpec(data) {
-        this._globalTypes = parseGlobalTypes(data);
-        var enhancer = new RamlEnhancer(data, this._globalTypes);
+        var enhancer = new RamlEnhancer(data);
         this._routes = enhancer.routes;
         this.data = data;
     }
@@ -201,14 +195,19 @@ var RamlSpec = (function () {
     return RamlSpec;
 })();
 exports.RamlSpec = RamlSpec;
-function validate(schema, example) {
-    var v = validator(schema);
+function validate(schema, example, globs) {
+    var g;
+    if (globs) {
+        g = { schemas: globs };
+    }
+    var v = validator(schema, g);
     v(example);
     return v.errors || [];
 }
 ;
 var ParseErrors = (function () {
-    function ParseErrors() {
+    function ParseErrors(globalTypes) {
+        this.globalTypes = globalTypes;
         this.errors = [];
     }
     ParseErrors.prototype.registerError = function (url, methodName, status, message) {
@@ -228,7 +227,7 @@ var ParseErrors = (function () {
             this.registerError(url, methodName, status, body.parsedExample.error.toMessage());
         }
         if (body.parsedSchema.result && body.parsedExample.result) {
-            var errors = validate(body.parsedSchema.result, body.parsedExample.result);
+            var errors = validate(body.parsedSchema.result, body.parsedExample.result, this.globalTypes);
             errors.forEach(function (e) {
                 _this.registerError(url, methodName, status, e.field + ": " + e.message);
             });
@@ -240,7 +239,7 @@ exports.ParseErrors = ParseErrors;
 var Validator = (function () {
     function Validator(spec) {
         this.spec = spec;
-        this.parseErrors = new ParseErrors();
+        this.parseErrors = new ParseErrors(this.spec.getData().parsedSchemas);
     }
     Validator.prototype.validate = function () {
         var _this = this;

@@ -15,7 +15,7 @@ if (typeof targets[target] === 'undefined') {
 }
 
 function configToCmd(config: TsConfig.Config): string {
-    var args: string[] = ['tsc'];
+    var args: string[] = ['node ./node_modules/typescript/bin/tsc.js'];
     Object.keys(config.compilerOptions).forEach((key: string): void => {
         var val = (<any> config.compilerOptions)[key];
         if (typeof val === "boolean") {
@@ -31,5 +31,10 @@ function configToCmd(config: TsConfig.Config): string {
     return args.join(' ');
 }
 
-var out = child_process.execSync(configToCmd(require(targets[target])));
+try {
+    var out = child_process.execSync(configToCmd(require(targets[target])));
+} catch(e) {
+    console.log(e.stdout.toString('utf8'));
+    throw e;
+}
 console.log((<any> out).toString('utf8'));
