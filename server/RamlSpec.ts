@@ -263,7 +263,7 @@ function validate(schema: Object, example: Object) {
 };
 
 
-interface ValidationError {
+export interface ValidationError {
     url: string;
     method: string;
     status: string;

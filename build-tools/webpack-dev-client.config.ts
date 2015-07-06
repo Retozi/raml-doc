@@ -3,9 +3,7 @@ import WebpackConfig = require('./WebpackConfig');
 var config = WebpackConfig.makeBase();
 
 config.entry = [
-    './client/main.ts',
-    "webpack/hot/dev-server",
-    "webpack-dev-server/client?https://localhost:8081"
+    './client/main.ts'
 ]
 
 config.output = {
@@ -17,7 +15,7 @@ config.output = {
 config.plugins = WebpackConfig.getPlugins({
     environment: 'development',
     nodeSourceMaps: false,
-    hotReload: true,
+    hotReload: false,
     minify: false
 });
 
