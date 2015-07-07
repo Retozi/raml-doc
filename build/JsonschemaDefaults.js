@@ -10,8 +10,10 @@ function parseNode(node) {
     }
     if (node.type === 'object') {
         node.additionalProperties = false;
-        node.required = Object.keys(node.properties);
-        Object.keys(node.properties).forEach(function (n) { return parseNode(n); });
+        if (!node.required) {
+            node.required = Object.keys(node.properties);
+        }
+        Object.keys(node.properties).forEach(function (n) { return parseNode(node.properties[n]); });
         return;
     }
     if (_.isArray(node)) {
@@ -19,7 +21,7 @@ function parseNode(node) {
         return;
     }
     if (_.isObject(node)) {
-        Object.keys(node).forEach(function (n) { return parseNode(n); });
+        Object.keys(node).forEach(function (n) { return parseNode(node[n]); });
         return;
     }
     return;

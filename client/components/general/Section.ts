@@ -1,4 +1,5 @@
 /// <reference path="../../../typings/references.d.ts" />
+require('./SectionStyles.styl');
 import React = require('react');
 
 interface Props {

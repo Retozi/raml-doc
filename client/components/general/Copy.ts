@@ -1,4 +1,5 @@
 /// <reference path="../../../typings/references.d.ts" />
+require('./CopyStyles.styl');
 import React = require('react');
 import Markdown = require('./Markdown');
 

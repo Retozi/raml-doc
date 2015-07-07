@@ -108,7 +108,7 @@ export function makeBase(): webpack.Config {
                 },
                 {
                     test: /\.styl$/,
-                    loader: "style!css!autoprefixer!stylus?paths=./pc-ui/md/styl"
+                    loader: "style!css!autoprefixer!stylus?paths=./client/styl"
                 },
                 {test: /\.css$/, loader: "style!css!autoprefixer"},
                 {test: /\.(otf|eot|svg|ttf|woff)/, loader: "url-loader?limit=8192"}

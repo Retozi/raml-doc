@@ -20,6 +20,7 @@ schemas:
         properties:
             gender:
                 type: integer
+                description: this is a long long test description that does all kinds of stuff
             company1:
                 type: string
             company2:
@@ -29,7 +30,13 @@ schemas:
             lastName:
                 type: string
             street1:
-                type: string
+                type: object
+                properties:
+                    test:
+                        type: string
+                        description: hello hello hello
+                    test2:
+                        type: number
             street2:
                 type: string
             zipCode:

@@ -88,7 +88,9 @@ function parseGlobalTypes(ramlObj) {
     }
     ramlObj.schemas.forEach(function (s) {
         Object.keys(s).forEach(function (t) {
-            types[t] = yaml.load(s[t]);
+            var schema = yaml.load(s[t]);
+            JsonschemaDefaults.addDefaults(schema);
+            types[t] = schema;
         });
     });
     return types;

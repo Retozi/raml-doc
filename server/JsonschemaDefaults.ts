@@ -11,8 +11,10 @@ function parseNode(node: any) {
     }
     if (node.type === 'object') {
         node.additionalProperties = false;
-        node.required = Object.keys(node.properties);
-        Object.keys(node.properties).forEach((n: any) => parseNode(n));
+        if (!node.required) {
+            node.required = Object.keys(node.properties);
+        }
+        Object.keys(node.properties).forEach((n: string) => parseNode(node.properties[n]));
         return;
     }
 
@@ -22,7 +24,7 @@ function parseNode(node: any) {
     }
 
     if (_.isObject(node)) {
-        Object.keys(node).forEach((n: any) => parseNode(n));
+        Object.keys(node).forEach((n: string) => parseNode(node[n]));
         return;
     }
     return;
