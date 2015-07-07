@@ -4,6 +4,8 @@ import React = require('react');
 import RamlSpec = require('../../../server/RamlSpec');
 import Section = require('../general/Section');
 import Schema = require('./Schema');
+import Subhead = require('../general/Subhead');
+import Block = require('../general/Block');
 
 interface Props {
     parsedSchemas: RamlSpec.GlobalTypes;
@@ -14,11 +16,11 @@ function SchemasFactory(parsedSchemas: RamlSpec.GlobalTypes) {
         return null;
     }
     var res: React.ReactNode[] = []
-    Object.keys(parsedSchemas).forEach((title: string) => {
+    Object.keys(parsedSchemas).forEach((title: string, i: number) => {
+        res.push(Subhead.Factory({text: title, key: i + '-title'}));
         res.push(
             Schema.Factory({
-                key: title,
-                title: title,
+                key: i,
                 schema: parsedSchemas[title]
             })
         )
@@ -30,7 +32,9 @@ export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
         return Section.Factory({title: "Global Types"},
-            SchemasFactory(this.props.parsedSchemas)
+            Block.Factory({
+                left: SchemasFactory(this.props.parsedSchemas)
+            })
         );
     }
 }

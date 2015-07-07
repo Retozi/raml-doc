@@ -8,7 +8,7 @@ declare module jsonschema {
         description?: string;
         enum?: any[];
         properties?: Properties;
-        items?: SchemaNode[];
+        items?: SchemaNode;
         required?: string[];
     }
 

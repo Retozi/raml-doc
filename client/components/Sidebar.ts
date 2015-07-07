@@ -1,3 +1,4 @@
+require('./SidebarStyles.styl');
 import React = require('react');
 import RamlSpec = require('../../server/RamlSpec');
 

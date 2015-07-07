@@ -12,7 +12,7 @@ interface Props {
 
 function OptionalFactory(required: boolean) {
     if (!required) {
-        return el('span', {className: 'rd-schema-optional'}, 'optional ');
+        return el('span', {className: 'rd-schema-optional', key: 'optional'}, 'optional ');
     }
 }
 
@@ -20,7 +20,7 @@ function TypeFactory(type: string | string[]) {
     if (!type) {
         return null;
     }
-    return [el('span', {className: 'rd-schema-type'}, type)];
+    return [el('span', {className: 'rd-schema-type', key: 'type'}, type)];
 }
 
 
@@ -28,7 +28,7 @@ function DescriptionFactory(desc: string) {
     if (!desc) {
         return null;
     }
-    return el('div', {className: 'rd-schema-description'}, desc);
+    return el('div', {className: 'rd-schema-description', key: 'desc'}, desc);
 }
 
 
@@ -44,7 +44,7 @@ function SchemaNodeFactory(schemaNode: jsonschema.SchemaNode, required: boolean)
     if (schemaNode.type === 'object') {
         return ObjectFactory(schemaNode, required);
     } else if (schemaNode.type === 'array') {
-        //return ArrayFactory(schemaNode);
+        return ArrayFactory(schemaNode, required);
     } else {
         return PrimitiveFactory(schemaNode, required);
     }
@@ -58,32 +58,30 @@ function PropertiesFactory(properties: jsonschema.Properties, required: string[]
     if (!properties) {
         return null;
     }
-    return el('div', {className: 'rd-schema-properties'},
+    return el('div', {className: 'rd-schema-properties', key: 'props'},
         Object.keys(properties).map((title: string) => {
             return el('div', {className: 'rd-schema-property', key: title}, [
-                el('span', {className: 'rd-schema-propertyKey'}, `${title}: `),
+                el('span', {className: 'rd-schema-propertyKey', key: 'key'}, `${title}: `),
                 SchemaNodeFactory(properties[title], isRequired(title, required)), '\n'
             ]);
         })
     );
 }
 
-function Array(schemaNode: jsonschema.SchemaNode, required: boolean) {
-    console.log(schemaNode)
+function ArrayFactory(schemaNode: jsonschema.SchemaNode, required: boolean) {
     return el('div', {className: 'rd-schema-array'},
         OptionalFactory(required),
-        '[\n    ',
-        SchemaNodeFactory(schemaNode.items[0], true),
-        '\n]',
+        '[\n  {\n    ',
+        PropertiesFactory(schemaNode.items.properties, schemaNode.items.required),
+        '\n  }, {\n    ...\n  }\n]',
         DescriptionFactory(schemaNode.description)
     )
 }
 
 function ObjectFactory(schemaNode: jsonschema.SchemaNode, required: boolean) {
-    console.log(schemaNode)
     return el('div', {className: 'rd-schema-object'},
         OptionalFactory(required),
-        '{\n    ',
+        '{\n  ',
         PropertiesFactory(schemaNode.properties, schemaNode.required),
         '\n}',
         DescriptionFactory(schemaNode.description)

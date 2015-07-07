@@ -1,3 +1,4 @@
+require('./ContentStyles.styl');
 import React = require('react');
 import RamlSpec = require('../../server/RamlSpec');
 import Documentation = require('./raml/Documentation');
@@ -12,9 +13,12 @@ export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
         return React.createElement('div', {className: "rd-content"},
-            Documentation.Factory({documentation: this.props.raml.documentation}),
-            GlobalSchemas.Factory({parsedSchemas: this.props.raml.parsedSchemas}),
-            Resources.Factory({resources: this.props.raml.resources})
+            React.createElement('div', {className: "rd-content-wrapper"},
+                React.createElement('div', {className: 'rd-content-blackBackground'}),
+                Documentation.Factory({documentation: this.props.raml.documentation}),
+                GlobalSchemas.Factory({parsedSchemas: this.props.raml.parsedSchemas}),
+                Resources.Factory({resources: this.props.raml.resources})
+            )
         );
     }
 }

@@ -21,19 +21,19 @@ export function emptyJsonBody(): JsonBody {
     }
 }
 
-interface Body {
+export interface Body {
     'application/json': JsonBody;
 }
 
-interface Response extends raml.Response {
+export interface Response extends raml.Response {
     body: Body;
 }
 
-interface Responses {
+export interface Responses {
     [idx: string]: Response;
 }
 
-interface Method extends raml.Method {
+export interface Method extends raml.Method {
     body: Body;
     responses: Responses;
 }

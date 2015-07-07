@@ -28,7 +28,12 @@ schemas:
             firstName:
                 type: string
             lastName:
-                type: string
+                type: array
+                items:
+                    type: object
+                    properties:
+                        boink:
+                            type: string
             street1:
                 type: object
                 properties:
