@@ -7,10 +7,10 @@
         "outDir": "./build"
 	},
     "files": [
-        "server/ramlSpec",
-        "server/ramlSpec_test",
-        "server/terseJsonschema",
-        "server/terseJsonschema_test",
+        "server/RamlSpec",
+        "server/RamlSpec_test",
+        "server/TerseJsonschema",
+        "server/TerseJsonschema_test",
         "server/Server"
     ]
 }
