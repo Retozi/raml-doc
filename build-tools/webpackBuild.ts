@@ -6,8 +6,7 @@ import os = require('os');
 var EOL = os.EOL;
 
 var targets: {[idx: string]: string} = {
-    'test-server': './webpack-test-server.config.ts',
-    'prod-server': './webpack-prod-server.config.ts'
+    'prod': './webpack-prod-client.config.ts'
 };
 
 var target = process.argv.slice(2)[0];
