@@ -5,8 +5,8 @@ function addDefaults(schema) {
 }
 exports.addDefaults = addDefaults;
 function parseNode(node) {
-    if (_.isObject(node) && !node.type && !node.$ref) {
-        throw Error("jsonschema object must either have a type or a ref");
+    if (_.isPlainObject(node) && Object.keys(node).indexOf("type") === -1 && !node.$ref) {
+        throw Error("jsonschema object must either have a type or a ref\n " + JSON.stringify(node, null, 4));
     }
     if (node.type === 'object') {
         node.additionalProperties = false;
@@ -20,7 +20,7 @@ function parseNode(node) {
         parseNode(node[0]);
         return;
     }
-    if (_.isObject(node)) {
+    if (_.isPlainObject(node)) {
         Object.keys(node).forEach(function (n) { return parseNode(node[n]); });
         return;
     }

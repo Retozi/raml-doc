@@ -24,6 +24,9 @@ function ResourcesFactory(resources: RamlSpec.Resource[]): React.ReactNode {
 export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
+        if (!this.props.resources) {
+            return null;
+        }
         return React.createElement('div', {className: 'rd-resources'},
             ResourcesFactory(this.props.resources)
         );

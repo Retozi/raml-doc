@@ -6,8 +6,11 @@ export function addDefaults(schema: Object): void {
 }
 
 function parseNode(node: any): any {
-    if (_.isObject(node) && !node.type && !node.$ref) {
-        throw Error("jsonschema object must either have a type or a ref");
+    if (_.isPlainObject(node) && Object.keys(node).indexOf("type") === -1 && !node.$ref) {
+        throw Error(
+`jsonschema object must either have a type or a ref
+ ${JSON.stringify(node, null, 4)}`
+        );
     }
     if (node.type === 'object') {
         node.additionalProperties = false;
@@ -23,7 +26,7 @@ function parseNode(node: any): any {
         return;
     }
 
-    if (_.isObject(node)) {
+    if (_.isPlainObject(node)) {
         Object.keys(node).forEach((n: string) => parseNode(node[n]));
         return;
     }
