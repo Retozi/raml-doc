@@ -20,3 +20,4 @@
 /// <reference path="./js-yaml/js-yaml.d.ts" />
 /// <reference path="./marked/marked.d.ts" />
 /// <reference path="./jsonschema/jsonschema.d.ts" />
+/// <reference path="./highlightjs/highlightjs.d.ts" />

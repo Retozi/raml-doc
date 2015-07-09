@@ -21,7 +21,7 @@ export class Component extends React.Component<Props, State> {
         this.state = {
             raml: null,
             validationErrors: []
-        }
+        };
     }
     setRamlState(raml: RamlSpec.Raml, validationErrors: RamlSpec.ValidationError[]): void {
         this.setState({
@@ -30,9 +30,11 @@ export class Component extends React.Component<Props, State> {
         });
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         if (this.props.socket) {
+            /* tslint:disable */
             console.log("listening to changes in raml files");
+            /* tslint:enable */
             var socket = require('socket.io-client')(this.props.socket);
             socket.on("raml", (d: State) => this.setRamlState(d.raml, d.validationErrors));
         }

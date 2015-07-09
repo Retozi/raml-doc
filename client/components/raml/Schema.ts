@@ -1,7 +1,8 @@
 /// <reference path="../../../typings/references.d.ts" />
 require('./SchemaStyles.styl');
 import React = require('react');
-import Markdown = require('../general/Markdown');
+import Subhead = require('../general/Subhead');
+
 
 var el = React.createElement;
 
@@ -10,13 +11,13 @@ interface Props {
     schema: jsonschema.Schema;
 }
 
-function OptionalFactory(required: boolean) {
+function OptionalFactory(required: boolean): React.ReactNode {
     if (!required) {
         return el('span', {className: 'rd-schema-optional', key: 'optional'}, 'optional ');
     }
 }
 
-function TypeFactory(type: string | string[]) {
+function TypeFactory(type: string | string[]): React.ReactNode  {
     if (!type) {
         return null;
     }
@@ -24,7 +25,7 @@ function TypeFactory(type: string | string[]) {
 }
 
 
-function DescriptionFactory(desc: string) {
+function DescriptionFactory(desc: string): React.ReactNode  {
     if (!desc) {
         return null;
     }
@@ -32,7 +33,7 @@ function DescriptionFactory(desc: string) {
 }
 
 
-function PrimitiveFactory(schemaNode: jsonschema.SchemaNode, required: boolean) {
+function PrimitiveFactory(schemaNode: jsonschema.SchemaNode, required: boolean): React.ReactNode  {
     return el('div', {className: 'rd-schema-primitive'},
         OptionalFactory(required),
         TypeFactory(schemaNode.type),
@@ -54,7 +55,7 @@ function isRequired(key: string, required: string[]): boolean {
     return (required) ? required.indexOf(key) > -1 : false;
 }
 
-function PropertiesFactory(properties: jsonschema.Properties, required: string[]) {
+function PropertiesFactory(properties: jsonschema.Properties, required: string[]): React.ReactNode {
     if (!properties) {
         return null;
     }
@@ -68,31 +69,50 @@ function PropertiesFactory(properties: jsonschema.Properties, required: string[]
     );
 }
 
-function ArrayFactory(schemaNode: jsonschema.SchemaNode, required: boolean) {
-    return el('div', {className: 'rd-schema-array'},
-        OptionalFactory(required),
-        '[\n  {\n    ',
-        PropertiesFactory(schemaNode.items.properties, schemaNode.items.required),
-        '\n  }, {\n    ...\n  }\n]',
-        DescriptionFactory(schemaNode.description)
-    )
+function ArrayFactory(schemaNode: jsonschema.SchemaNode, required: boolean): React.ReactNode {
+    if (schemaNode.items.type === 'object') {
+        return el('div', {className: 'rd-schema-array'},
+            OptionalFactory(required),
+            '[\n  {\n    ',
+            PropertiesFactory(schemaNode.items.properties, schemaNode.items.required),
+            '\n  }, {\n    ...\n  }\n]',
+            DescriptionFactory(schemaNode.description)
+        );
+    } else {
+        return el('div', {className: 'rd-schema-array'},
+            OptionalFactory(required),
+            '[\n  ',
+            SchemaNodeFactory(schemaNode.items, true),
+            '\n  , \n    ...\n  \n]',
+            DescriptionFactory(schemaNode.description)
+        );
+    }
 }
 
-function ObjectFactory(schemaNode: jsonschema.SchemaNode, required: boolean) {
+
+function ObjectFactory(schemaNode: jsonschema.SchemaNode, required: boolean): React.ReactNode {
     return el('div', {className: 'rd-schema-object'},
         OptionalFactory(required),
         '{\n  ',
         PropertiesFactory(schemaNode.properties, schemaNode.required),
         '\n}',
         DescriptionFactory(schemaNode.description)
-    )
+    );
 }
 
 export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
-        return el('pre', {className: 'rd-schema'},
-            SchemaNodeFactory(this.props.schema, true)
+        if (!this.props.schema) {
+            return null;
+        }
+        return (
+            el('div', {className: 'rd-schema'},
+                Subhead.Factory({text: this.props.title || "Schema"}),
+                el('pre', {className: 'rd-schema-definition'},
+                    SchemaNodeFactory(this.props.schema, true)
+                )
+            )
         );
     }
 }

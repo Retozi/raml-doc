@@ -1,7 +1,6 @@
 /// <reference path="../typings/references.d.ts" />
 
 import React = require('react');
-import RamlSpec = require('../server/RamlSpec');
 import App = require('./components/App');
 
 function parseProps(): App.Props {
@@ -22,4 +21,4 @@ function parseProps(): App.Props {
 React.render(
     React.createElement(App.Component, parseProps()),
     document.getElementById('app-container')
-)
+);

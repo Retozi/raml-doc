@@ -1,5 +1,5 @@
 /// <reference path="../../../typings/references.d.ts" />
-require('./SectionStyles.styl');
+require('./SubSectionStyles.styl');
 import React = require('react');
 import Utils = require('../Utils');
 import Block = require('./Block');
@@ -12,9 +12,9 @@ interface Props {
 export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
-        return React.createElement('div', {className: 'rd-section', id: Utils.stringToHtmlId(this.props.title)},
+        return React.createElement('div', {className: 'rd-subSection', id: Utils.stringToHtmlId(this.props.title)},
             Block.Factory({
-                left: React.createElement('h1', {className: 'rd-section-title'},
+                left: React.createElement('h2', {className: 'rd-subSection-title'},
                     this.props.title
                 )
             }),

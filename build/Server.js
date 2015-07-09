@@ -56,7 +56,7 @@ var Server = (function () {
         if (this.options.bundle) {
             fs.writeFile(this.options.bundle, bundleHtml(data), function (err) {
                 if (err) {
-                    console.log(err);
+                    console.error(err);
                 }
             });
         }

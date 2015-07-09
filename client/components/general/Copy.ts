@@ -10,6 +10,9 @@ interface Props {
 export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
+        if (!this.props.md) {
+            return null;
+        }
         return Markdown.Factory({
             className: 'rd-copy',
             md: this.props.md

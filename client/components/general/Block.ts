@@ -17,7 +17,7 @@ export class Component extends React.Component<Props, void> {
             React.createElement('div', {className: 'rd-block-rightContent'},
                 this.props.right || null
             )
-        )
+        );
     }
 }
 

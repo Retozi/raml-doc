@@ -1,11 +1,11 @@
 /// <reference path="../typings/references.d.ts" />
 import _ = require('lodash');
 
-export function addDefaults(schema: Object) {
+export function addDefaults(schema: Object): void {
     parseNode(schema);
 }
 
-function parseNode(node: any) {
+function parseNode(node: any): any {
     if (_.isObject(node) && !node.type && !node.$ref) {
         throw Error("jsonschema object must either have a type or a ref");
     }
@@ -19,7 +19,7 @@ function parseNode(node: any) {
     }
 
     if (_.isArray(node)) {
-        parseNode(node[0])
+        parseNode(node[0]);
         return;
     }
 

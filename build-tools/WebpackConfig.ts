@@ -2,10 +2,8 @@
 
 import webpack = require("webpack");
 import walkSync = require('walk-sync');
-import HtmlWebpackPlugin = require('html-webpack-plugin');
 import path = require('path');
 import fs = require('fs');
-import _ = require('lodash');
 
 export var PROJECT_ROOT = path.dirname(__dirname);
 
@@ -117,5 +115,5 @@ export function makeBase(): webpack.Config {
         resolve: {
             extensions: ["", ".js", '.ts']
         }
-    }
+    };
 }

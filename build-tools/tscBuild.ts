@@ -33,8 +33,12 @@ function configToCmd(config: TsConfig.Config): string {
 
 try {
     var out = child_process.execSync(configToCmd(require(targets[target])));
-} catch(e) {
+} catch (e) {
+    /* tslint:disable */
     console.log(e.stdout.toString('utf8'));
+    /* tslint:enable */
     throw e;
 }
+/* tslint:disable */
 console.log((<any> out).toString('utf8'));
+/* tslint:enable */

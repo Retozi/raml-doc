@@ -1,27 +1,227 @@
-put:
-    displayName: edit the vignette field of a LicensePlate
+
+post:
+    displayName: Create a new Account
     body:
-        example: |
-            {
-                "vignetteNrs": ["123490334", "312483493"]
-            }
+        application/json:
+            example: |
+                {
+                    "accountTypeId": 1,
+                    "sendBadge": true,
+                    "correspondenceLanguageId": 1,
+                    "badge": {
+                        "labelNr": "1022393583",
+                        "typeId": 123
+                    },
+                    "licensePlate": {
+                        "countryId": "CH",
+                        "typeId": 1,
+                        "licensePlateNr": "ZH727222",
+                        "sendVignette": false,
+                        "changeablePlate": false
+                    },
+                    "address": {
+                        "gender": 1,
+                        "firstName": "Hans",
+                        "lastName": "Muster",
+                        "street1": "Teststrasse 1",
+                        "zipCode": "8000",
+                        "city": "Zürich",
+                        "countryId": "CH"
+                    },
+                    "login": {
+                        "email": "test@bla.ch",
+                        "password": "1234abc",
+                        "mobilePhone": "0793333333"
+                    }
+                }
+            schema: |
+                type: object
+                properties:
+                    accountTypeId:
+                        type: integer
+                    correspondenceLanguageId:
+                        type: integer
+                    sendBadge:
+                        type: boolean
+                    badge:
+                        type: object
+                        properties:
+                            labelNr:
+                                type: string
+                            typeId:
+                                type: integer
+                    licensePlate:
+                        type: object
+                        properties:
+                            # the country ID is blablaba
+                            countryId:
+                                type: string
+                            typeId:
+                                type: integer
+                            licensePlateNr:
+                                type: string
+                            sendVignette:
+                                type: boolean
+                            changeablePlate:
+                                type: boolean
 
-        schema: |
-            type: 'object'
-            properties:
-                vignetteNrs:
-                    type: array
-                    items:
-                        type: string
+                    address:
+                        $ref: Address  #address only needed if info must be sent
 
-            vignetteNrs: [ 'string' ]
+                    login:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+                            password:
+                                type: string
+                            mobilePhone:
+                                type: string
+
+                required:
+                    - accountTypeId
+                    - sendBadge
+                    - login
+                    - correspondenceLanguageId
+
     responses:
-        200:
+        201:
+            description: Successfully created customer
+delete:
+    displayName: Delete Account
+    body:
+        application/json:
+            example: |
+                {
+                    "username": "hans.muster@gmail.com",
+                    "password": "xyz"
+                }
+            schema: |
+                type: object
+                properties:
+                    username:
+                        type: string
+                    password:
+                        type: string
+    responses:
+        204:
+            description: Successfully deleted resource
+
+
+/payment-type:
+    displayName: Payment Type
+    get:
+        displayName: Get active payment type
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "paymentTypeId": 123,
+                                "paymentTypeName": {
+                                    "de": "Vorauszahlung",
+                                    "fr": "[fr]",
+                                    "it": "[it]"
+                                }
+                            }
+                        schema: |
+                            type: object
+                            properties:
+                                paymentTypeId:
+                                    type: integer
+                                paymentTypeName:
+                                    $ref: MultiLangString
+    /lsv-pdf:
+        displayName: LSV Form
+
+        get:
+            displayName: Get LSV Form
+            responses:
+                200:
+                    description: return LSV Form pdf
+                    body:
+                        application/json:
+                            schema: |
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        id:
+                                            type: integer
+                                        labelNr:
+                                            type:
+                                                - string
+                                                - null
+                                        typeId:
+                                            type: integer
+                                        active:
+                                            type: boolean
+                                        remarks:
+                                            type:
+                                                - string
+                                                - null
+                                        loginId:
+                                            type:
+                                                - integer
+                                                - null
+    /payment-on-delivery:
+
+        displayName: Payment on Delivery
+        post:
             body:
-                example: |
-                    {"hello": "world"}
-                schema: |
-                    type: object
-                    properties:
-                        hello: {type: string}
+                application/json:
+                    schema: |
+                        type: object
+                        properties:
+                            type:
+                                type: integer
+                                enum: [0, 1]
+                                description: 0 = bank, 1 = post
+                            iban:
+                                type: string
+                            bic:
+                                type: string
+
+                        required:
+                            - type
+                            - iban
+
+                    example: |
+                        {
+                            "type": 0,
+                            "iban": "CH2348232192342"
+                        }
+            displayName: apply for payment on delivery
+            responses:
+                202:
+                    description: Successfully applied for payment on delivery
+
+
+/terminal-transactions:
+
+    get:
+        displayName: Get the the badge transcations of a user
+        queryParameters:
+            test1:
+                type: integer
+                description: Oh this is a nice description
+        responses:
+            200:
+                body:
+                    application/json:
+                        schema: |
+                            type: array
+                            items:
+                                start:
+                                    $ref: Datetime
+                                end:
+                                    $ref Datetime
+                                status:
+                                    type: string
+                                badgeId:
+                                    type: string
+                                description:
+                                    type: string
+
 

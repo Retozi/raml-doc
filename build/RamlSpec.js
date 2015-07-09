@@ -51,7 +51,6 @@ var ParsedSchema = (function (_super) {
         }
         var result = null;
         var error = null;
-        var schema = null;
         try {
             result = (schemaStr) ? yaml.load(schemaStr) : null;
             JsonschemaDefaults.addDefaults(result);

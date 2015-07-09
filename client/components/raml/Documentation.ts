@@ -23,7 +23,7 @@ class DocumentationItem extends React.Component<ItemProps, void> {
 
 var DocumentationItemFactory = React.createFactory(DocumentationItem);
 
-function ItemFactory(props: Props) {
+function ItemFactory(props: Props): React.ReactNode {
     return props.documentation.map((d: RamlSpec.Documentation): React.ReactNode => {
         return DocumentationItemFactory({
             key: d.title,

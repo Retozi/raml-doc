@@ -11,20 +11,20 @@ interface Props {
     parsedSchemas: RamlSpec.GlobalTypes;
 }
 
-function SchemasFactory(parsedSchemas: RamlSpec.GlobalTypes) {
+function SchemasFactory(parsedSchemas: RamlSpec.GlobalTypes): React.ReactNode {
     if (!parsedSchemas) {
         return null;
     }
-    var res: React.ReactNode[] = []
+    var res: React.ReactNode[] = [];
     Object.keys(parsedSchemas).forEach((title: string, i: number) => {
-        res.push(Subhead.Factory({text: title, key: i + '-title'}));
         res.push(
             Schema.Factory({
                 key: i,
+                title: title,
                 schema: parsedSchemas[title]
             })
-        )
-    })
+        );
+    });
     return res;
 }
 

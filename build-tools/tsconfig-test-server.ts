@@ -10,6 +10,6 @@ var config: TsConfig.Config = {
     files: [
         './server/RamlSpec_test.ts'
     ]
-}
+};
 
 export = config;

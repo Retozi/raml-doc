@@ -7,9 +7,9 @@ interface Props {
     resources: RamlSpec.Resource[];
 }
 
-function ResourcesFactory(resources: RamlSpec.Resource[]) {
+function ResourcesFactory(resources: RamlSpec.Resource[]): React.ReactNode {
     var res: React.ReactNode[] = [];
-    function walk(r: RamlSpec.Resource[]) {
+    function walk(r: RamlSpec.Resource[]): void {
         r.forEach((r: RamlSpec.Resource) => {
             res.push(Resource.Factory({key: r.absoluteUri, resource: r}));
             if (r.resources) {

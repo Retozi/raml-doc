@@ -12,13 +12,16 @@ interface JsonBody {
         parsedExample?: ParsedExample;
 }
 
+export type NamedParameters = raml.NamedParameters;
+export type NamedParameter = raml.NamedParameter;
+
 export function emptyJsonBody(): JsonBody {
     return {
         schema: null,
         example: null,
         parsedSchema: new ParsedSchema(null),
         parsedExample: new ParsedExample(null)
-    }
+    };
 }
 
 export interface Body {
@@ -51,7 +54,7 @@ export interface Raml extends raml.Raml {
     resources: Resource[];
 }
 
-enum ParseType {yaml=1, json}
+enum ParseType {yaml = 1, json}
 
 class ParseError {
     type: ParseType;
@@ -62,7 +65,7 @@ class ParseError {
     }
 
     toMessage(): string {
-        return `${ParseType[this.type]} parsing error: ${this.error.message}`
+        return `${ParseType[this.type]} parsing error: ${this.error.message}`;
     }
 }
 
@@ -85,11 +88,11 @@ export class ParsedSchema extends ParseResult {
         }
         var result: Object = null;
         var error: ParseError = null;
-        var schema: Object = null;
+
         try {
-            result = (schemaStr) ? yaml.load(schemaStr): null;
+            result = (schemaStr) ? yaml.load(schemaStr) : null;
             JsonschemaDefaults.addDefaults(result);
-        } catch(e) {
+        } catch (e) {
             error = new ParseError(ParseType.yaml, e);
         }
         super(result, error);
@@ -101,8 +104,8 @@ export class ParsedExample extends ParseResult {
         var result: Object = null;
         var error: ParseError = null;
         try {
-            result = (exampleStr) ? JSON.parse(exampleStr): null;
-        } catch(e) {
+            result = (exampleStr) ? JSON.parse(exampleStr) : null;
+        } catch (e) {
             error = new ParseError(ParseType.json, e);
         }
         super(result, error);
@@ -122,7 +125,7 @@ function parseGlobalTypes(ramlObj: raml.Raml): GlobalTypes {
     }
     ramlObj.schemas.forEach((s: raml.Schema): void => {
         Object.keys(s).forEach((t: string): void => {
-            var schema = yaml.load(s[t])
+            var schema = yaml.load(s[t]);
             JsonschemaDefaults.addDefaults(schema);
             types[t] = schema;
         });
@@ -153,20 +156,20 @@ class RamlEnhancer {
     globalTypes: GlobalTypes;
     routes: Route[];
     constructor(data: raml.Raml) {
-        this.data = <Raml>data;
+        this.data = <Raml> data;
         this.data.parsedSchemas = parseGlobalTypes(data);
         this.routes = [];
         // cast data as enhanced Raml,
         this.walk(this.data, '');
     }
 
-    private registerRoute(url: string, methods: Method[]) {
+    private registerRoute(url: string, methods: Method[]): void {
         if (methods) {
             this.routes.push(new Route(url, methods));
         }
     }
 
-    private enhanceBody(body: Body) {
+    private enhanceBody(body: Body): void {
         if (!body) {
             return;
         }
@@ -180,7 +183,7 @@ class RamlEnhancer {
         if (method.responses) {
             Object.keys(method.responses).forEach((status: string) => {
                 this.enhanceBody(method.responses[status].body);
-            })
+            });
         }
     }
 
@@ -204,7 +207,6 @@ class RamlEnhancer {
 
 export class RamlSpec {
     private data: raml.Raml;
-    private _globalTypes: GlobalTypes;
     private _routes: Route[];
 
     constructor(data: raml.Raml) {
@@ -258,7 +260,7 @@ export class RamlSpec {
     }
 }
 
-function validate(schema: Object, example: Object, globs?: GlobalTypes) {
+function validate(schema: Object, example: Object, globs?: GlobalTypes): validator.Error[] {
     var g: validator.Globals;
     if (globs) {
         g = {schemas: globs};
@@ -284,7 +286,7 @@ export class ParseErrors {
         this.globalTypes = globalTypes;
         this.errors = [];
     }
-    private registerError(url: string, methodName: string, status: string, message: string) {
+    private registerError(url: string, methodName: string, status: string, message: string): void {
         this.errors.push({
             url: url,
             method: methodName,
@@ -328,24 +330,24 @@ export class Validator {
             this.validatePayload(r.url, method.method);
             Object.keys(method.responses || {}).forEach((status: string) => {
                 this.validateResponse(r.url, method.method, status);
-            })
+            });
         });
     }
 
-    private validatePayload(url: string, methodName: string) {
+    private validatePayload(url: string, methodName: string): void {
         var body = this.spec.extractPayloadJsonBody(url, methodName);
         this.parseErrors.registerErrors(url, methodName, null, body);
     }
 
-    private validateResponse(url: string, methodName: string, status: string) {
+    private validateResponse(url: string, methodName: string, status: string): void {
         var body = this.spec.extractResponseJsonBody(url, methodName, status);
         this.parseErrors.registerErrors(url, methodName, status, body);
     }
 }
 
-export function loadAsync(path: string) {
+export function loadAsync(path: string): Q.Promise<RamlSpec> {
     return raml.loadFile(path)
-        .then(function(data: raml.Raml) {
+        .then(function(data: raml.Raml): RamlSpec {
             return new RamlSpec(data);
         });
 }

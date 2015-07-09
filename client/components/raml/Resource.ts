@@ -10,18 +10,29 @@ interface Props {
     resource: RamlSpec.Resource;
 }
 
-function DescriptionFactory(md: string) {
+function DescriptionFactory(md: string): React.ReactNode {
     if (!md) {
         return null;
     }
     return Copy.Factory({md: md});
 }
 
-function MethodsFactory(methods: RamlSpec.Method[]) {
+function MethodsFactory(methods: RamlSpec.Method[], uri: string): React.ReactNode {
     if (!methods) {
         return null;
     }
-    return methods.map((m: RamlSpec.Method) => Method.Factory({method: m}));
+    return methods.map((m: RamlSpec.Method) => Method.Factory({method: m, uri: uri}));
+}
+
+function ResourceFactory(resource: RamlSpec.Resource): React.ReactNode {
+    if (!resource.description) {
+        return null;
+    }
+    return Section.Factory({title: this.props.resource.displayName || this.props.resource.absoluteUri},
+        Block.Factory({
+            left: DescriptionFactory(this.props.resource.description)
+        })
+    );
 }
 
 export class Component extends React.Component<Props, void> {
@@ -32,12 +43,8 @@ export class Component extends React.Component<Props, void> {
         }
         return (
             React.createElement('div', null,
-                Section.Factory({title: this.props.resource.displayName || this.props.resource.absoluteUri},
-                    Block.Factory({
-                        left: DescriptionFactory(this.props.resource.description)
-                    })
-                ),
-                MethodsFactory(this.props.resource.methods)
+                ResourceFactory(this.props.resource),
+                MethodsFactory(this.props.resource.methods, this.props.resource.absoluteUri)
             )
         );
     }

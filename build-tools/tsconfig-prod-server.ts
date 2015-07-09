@@ -11,6 +11,6 @@ var config: TsConfig.Config = {
         './server/RamlSpec.ts',
         './server/Server.ts'
     ]
-}
+};
 
 export = config;
