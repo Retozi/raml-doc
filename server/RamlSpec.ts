@@ -210,23 +210,30 @@ class RamlEnhancer {
     }
 }
 
+interface SchemaData {
+    globalTypes: GlobalTypes;
+    routes: Route[];
+}
 
 export class RamlSpec {
-    private data: raml.Raml;
+    private data: Raml;
     private _routes: Route[];
 
     constructor(data: raml.Raml) {
         var enhancer = new RamlEnhancer(data);
         this._routes = enhancer.routes;
-        this.data = data;
+        this.data = <Raml> data;
     }
 
     getData(): Raml {
-        return <Raml> this.data;
+        return this.data;
     }
 
-    getRoutes(): Route[] {
-        return this._routes;
+    getSchemaData(): SchemaData {
+        return {
+            globalTypes: this.data.parsedSchemas,
+            routes: this._routes
+        }
     }
 
     getMethods(path: string): Method[] {
