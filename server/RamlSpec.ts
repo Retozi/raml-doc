@@ -155,6 +155,17 @@ interface ResourceContaining {
     resources: Resource[];
 }
 
+function alphabetical(a: Resource, b: Resource): number {
+     var A = a.absoluteUri.toLowerCase();
+     var B = b.absoluteUri.toLowerCase();
+     if (A < B) {
+        return -1;
+     } else if (A > B) {
+       return  1;
+     } else {
+       return 0;
+     }
+}
 
 
 class RamlEnhancer {
@@ -207,6 +218,7 @@ class RamlEnhancer {
             return;
         }
         node.resources.forEach((r: Resource) => this.enhanceResource(r, parentUrl));
+        node.resources.sort(alphabetical)
     }
 }
 

@@ -107,6 +107,19 @@ var Route = (function () {
     }
     return Route;
 })();
+function alphabetical(a, b) {
+    var A = a.absoluteUri.toLowerCase();
+    var B = b.absoluteUri.toLowerCase();
+    if (A < B) {
+        return -1;
+    }
+    else if (A > B) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
 var RamlEnhancer = (function () {
     function RamlEnhancer(data) {
         this.data = data;
@@ -152,6 +165,7 @@ var RamlEnhancer = (function () {
             return;
         }
         node.resources.forEach(function (r) { return _this.enhanceResource(r, parentUrl); });
+        node.resources.sort(alphabetical);
     };
     return RamlEnhancer;
 })();

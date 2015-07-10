@@ -13,7 +13,7 @@ interface Props {
 
 function OptionalFactory(required: boolean): React.ReactNode {
     if (!required) {
-        return el('span', {className: 'rd-schema-optional', key: 'optional'}, 'optional ');
+        return el('span', {className: 'rd-schema-optional', key: 'optional'}, ' optional ');
     }
 }
 
@@ -23,7 +23,7 @@ function TypeFactory(type: string | string[]): React.ReactNode  {
     }
     var typeString: string;
     if (_.isArray(type)) {
-        typeString = `[${(<string[]> type).join(', ')}]`
+        typeString = (<string[]> type).join(', ')
     } else {
         typeString = <string> type;
     }
@@ -42,10 +42,31 @@ function RefFactory(schemaNode: jsonschema.SchemaNode): React.ReactNode {
     return schemaNode.$ref;
 }
 
+function EnumFactory(e: any[]): React.ReactNode {
+    if (!e) {
+        return null;
+    }
+    return el('div', {className: 'rd-schema-enum', key: 'enum'},
+        `enum: ${e.join(', ')}`
+    )
+}
+
+function PatternFactory(pattern: string): React.ReactNode {
+    if (!pattern) {
+        return null;
+    }
+    return el('div', {className: 'rd-schema-pattern', key: 'pattern'},
+        `pattern: ${pattern}`
+    )
+}
+
+
 function PrimitiveFactory(schemaNode: jsonschema.SchemaNode, required: boolean): React.ReactNode  {
     return el('div', {className: 'rd-schema-primitive'},
-        OptionalFactory(required),
         TypeFactory(schemaNode.type),
+        OptionalFactory(required),
+        EnumFactory(schemaNode.enum),
+        PatternFactory(schemaNode.pattern),
         DescriptionFactory(schemaNode.description)
     );
 }
@@ -92,9 +113,9 @@ function ArrayFactory(schemaNode: jsonschema.SchemaNode, required: boolean): Rea
     } else {
         return el('div', {className: 'rd-schema-array'},
             OptionalFactory(required),
-            '[\n  ',
+            '[ ',
             SchemaNodeFactory(schemaNode.items, true),
-            '\n  , \n    ...\n  \n]',
+            ' ]',
             DescriptionFactory(schemaNode.description)
         );
     }
