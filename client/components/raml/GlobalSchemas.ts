@@ -21,6 +21,7 @@ function SchemasFactory(parsedSchemas: RamlSpec.GlobalTypes): React.ReactNode {
             Schema.Factory({
                 key: i,
                 title: title,
+                id: 'global-types/' + title,
                 schema: parsedSchemas[title]
             })
         );

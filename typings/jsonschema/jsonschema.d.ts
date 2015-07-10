@@ -11,9 +11,9 @@ declare module jsonschema {
         items?: SchemaNode;
         required?: string[];
         pattern?: string;
-        $oneOf?: SchemaNode[];
-        $allOf?: SchemaNode[];
-        $anyOf?: SchemaNode[];
+        oneOf?: SchemaNode[];
+        allOf?: SchemaNode[];
+        anyOf?: SchemaNode[];
     }
 
     type Schema = SchemaNode;

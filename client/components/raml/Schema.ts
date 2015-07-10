@@ -8,6 +8,7 @@ var el = React.createElement;
 
 interface Props {
     title?: string;
+    id?: string;
     schema: jsonschema.Schema;
 }
 
@@ -38,8 +39,14 @@ function DescriptionFactory(desc: string): React.ReactNode  {
     return el('div', {className: 'rd-schema-description', key: 'desc'}, desc);
 }
 
-function RefFactory(schemaNode: jsonschema.SchemaNode): React.ReactNode {
-    return schemaNode.$ref;
+function RefFactory($ref: string): React.ReactNode {
+    var ref = $ref.slice(1, $ref.length);
+    return el('a', {
+            className: 'rd-schema-ref',
+            href: '#global-types/' + ref
+        },
+        ref
+    );
 }
 
 function EnumFactory(e: any[]): React.ReactNode {
@@ -71,13 +78,24 @@ function PrimitiveFactory(schemaNode: jsonschema.SchemaNode, required: boolean):
     );
 }
 
+function OneOfFactory(oneOf: jsonschema.SchemaNode[]): React.ReactNode {
+    var res: React.ReactNode[] = [];
+    oneOf.forEach((t: jsonschema.SchemaNode): void => {
+        res.push(SchemaNodeFactory(t, true));
+        res.push(', ')
+    })
+    return res.slice(0, res.length -1);
+}
+
 function SchemaNodeFactory(schemaNode: jsonschema.SchemaNode, required: boolean): React.ReactNode {
-    if (schemaNode.type === 'object') {
+    if(schemaNode.oneOf) {
+        return OneOfFactory(schemaNode.oneOf)
+    } else if (schemaNode.type === 'object') {
         return ObjectFactory(schemaNode, required);
     } else if (schemaNode.type === 'array') {
         return ArrayFactory(schemaNode, required);
     } else if (schemaNode.$ref) {
-        return RefFactory(schemaNode);
+        return RefFactory(schemaNode.$ref);
     } else {
         return PrimitiveFactory(schemaNode, required);
     }
@@ -139,7 +157,7 @@ export class Component extends React.Component<Props, void> {
             return null;
         }
         return (
-            el('div', {className: 'rd-schema'},
+            el('div', {className: 'rd-schema', id: this.props.id},
                 Subhead.Factory({text: this.props.title || "Schema"}),
                 el('pre', {className: 'rd-schema-definition'},
                     SchemaNodeFactory(this.props.schema, true)
