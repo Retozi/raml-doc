@@ -32,8 +32,14 @@ function PayloadBodyFactory(body: RamlSpec.Body) {
     }
 
     return Block.Factory({
-        left: Schema.Factory({schema: jsonBody.parsedSchema.result}),
-        right: Example.Factory({example: jsonBody.parsedExample.result})
+        left: Schema.Factory({
+            title: "payload schema",
+            schema: jsonBody.parsedSchema.result
+        }),
+        right: Example.Factory({
+            title: "payload example",
+            example: jsonBody.parsedExample.result
+        })
     })
 }
 
@@ -42,7 +48,7 @@ function PayloadSectionFactory(method: RamlSpec.Method): React.ReactNode {
     if (!method || !method.body) {
         return null;
     }
-    return SubSection.Factory({title: "Payload Body"},
+    return SubSection.Factory(null,
        PayloadBodyFactory(method.body)
     )
 }
@@ -56,12 +62,16 @@ function ResponseBodySectionFactory(responses: RamlSpec.Responses): React.ReactN
         var r = responses[status];
         if (r.body && r.body['application/json']) {
             var jsonBody = r.body['application/json'];
-            res.push(SubSection.Factory({
-                    title: `${status} Body`,
-                },
+            res.push(SubSection.Factory(null,
                     Block.Factory({
-                        left: Schema.Factory({schema: jsonBody.parsedSchema.result}),
-                        right: Example.Factory({example: jsonBody.parsedExample.result})
+                        left: Schema.Factory({
+                            title: `${status} Body schema`,
+                            schema: jsonBody.parsedSchema.result
+                        }),
+                        right: Example.Factory({
+                            title: `${status} Body example`,
+                            example: jsonBody.parsedExample.result
+                        })
                     })
             ));
         }

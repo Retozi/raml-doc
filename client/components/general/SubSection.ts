@@ -9,15 +9,22 @@ interface Props {
     children?: string;
 }
 
+function TitleFactory(title: string) {
+    if (!title) {
+        return null;
+    }
+    return Block.Factory({
+        left: React.createElement('h2', {className: 'rd-subSection-title'},
+            title
+        )
+    });
+}
+
 export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
-        return React.createElement('div', {className: 'rd-subSection', id: Utils.stringToHtmlId(this.props.title)},
-            Block.Factory({
-                left: React.createElement('h2', {className: 'rd-subSection-title'},
-                    this.props.title
-                )
-            }),
+        return React.createElement('div', {className: 'rd-subSection'},
+            TitleFactory(this.props.title),
             this.props.children
         );
     }

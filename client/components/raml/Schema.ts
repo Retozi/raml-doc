@@ -2,7 +2,7 @@
 require('./SchemaStyles.styl');
 import React = require('react');
 import Subhead = require('../general/Subhead');
-
+import _ = require('lodash');
 
 var el = React.createElement;
 
@@ -21,7 +21,13 @@ function TypeFactory(type: string | string[]): React.ReactNode  {
     if (!type) {
         return null;
     }
-    return [el('span', {className: 'rd-schema-type', key: 'type'}, type)];
+    var typeString: string;
+    if (_.isArray(type)) {
+        typeString = `[${(<string[]> type).join(', ')}]`
+    } else {
+        typeString = <string> type;
+    }
+    return [el('span', {className: 'rd-schema-type', key: 'type'}, typeString)];
 }
 
 
@@ -32,6 +38,9 @@ function DescriptionFactory(desc: string): React.ReactNode  {
     return el('div', {className: 'rd-schema-description', key: 'desc'}, desc);
 }
 
+function RefFactory(schemaNode: jsonschema.SchemaNode): React.ReactNode {
+    return schemaNode.$ref;
+}
 
 function PrimitiveFactory(schemaNode: jsonschema.SchemaNode, required: boolean): React.ReactNode  {
     return el('div', {className: 'rd-schema-primitive'},
@@ -46,6 +55,8 @@ function SchemaNodeFactory(schemaNode: jsonschema.SchemaNode, required: boolean)
         return ObjectFactory(schemaNode, required);
     } else if (schemaNode.type === 'array') {
         return ArrayFactory(schemaNode, required);
+    } else if (schemaNode.$ref) {
+        return RefFactory(schemaNode);
     } else {
         return PrimitiveFactory(schemaNode, required);
     }

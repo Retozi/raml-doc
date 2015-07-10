@@ -42,12 +42,9 @@ export class Component extends React.Component<Props, State> {
 
     render(): React.ReactNode {
         var raml = this.props.raml || this.state.raml;
-        if (!raml) {
-            return null;
-        }
         return React.createElement('div', {className: "raml-doc"},
             Sidebar.Factory({raml: raml}),
-            Content.Factory({raml: raml})
+            Content.Factory({raml: raml, errors: this.state.validationErrors})
         );
     }
 }
