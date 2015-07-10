@@ -17,7 +17,7 @@ describe('RamlSpec', function () {
         expect(s.getData().version).to.equal('1');
     });
     it('returns routes', function () {
-        expect(s.getRoutes().length).to.equal(3);
+        expect(s.getSchemaData().routes.length).to.equal(3);
     });
     it('should get Methods', function () {
         expect(s.getMethods('test2/{id}').length).to.equal(1);

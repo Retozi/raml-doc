@@ -332,7 +332,7 @@ export class Validator {
         this.parseErrors = new ParseErrors(this.spec.getData().parsedSchemas);
     }
     validate(): ValidationError[] {
-        this.spec.getRoutes().forEach((r: Route) => {
+        this.spec.getSchemaData().routes.forEach((r: Route) => {
             this.validateRoute(r);
         });
         return this.parseErrors.errors;

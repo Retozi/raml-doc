@@ -164,8 +164,11 @@ var RamlSpec = (function () {
     RamlSpec.prototype.getData = function () {
         return this.data;
     };
-    RamlSpec.prototype.getRoutes = function () {
-        return this._routes;
+    RamlSpec.prototype.getSchemaData = function () {
+        return {
+            globalTypes: this.data.parsedSchemas,
+            routes: this._routes
+        };
     };
     RamlSpec.prototype.getMethods = function (path) {
         if (path[0] !== '/') {
@@ -250,7 +253,7 @@ var Validator = (function () {
     }
     Validator.prototype.validate = function () {
         var _this = this;
-        this.spec.getRoutes().forEach(function (r) {
+        this.spec.getSchemaData().routes.forEach(function (r) {
             _this.validateRoute(r);
         });
         return this.parseErrors.errors;

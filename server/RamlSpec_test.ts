@@ -22,7 +22,7 @@ describe('RamlSpec', function(): void {
     });
 
     it('returns routes', function(): void {
-        expect(s.getRoutes().length).to.equal(3);
+        expect(s.getSchemaData().routes.length).to.equal(3);
     });
 
     it('should get Methods', function(): void {
