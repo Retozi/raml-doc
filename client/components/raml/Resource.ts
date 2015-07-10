@@ -1,10 +1,12 @@
 /// <reference path="../../../typings/references.d.ts" />
+require('./ResourceStyles.styl');
 import React = require('react');
 import RamlSpec = require('../../../server/RamlSpec');
 import Section = require('../general/Section');
 import Copy = require('../general/Copy');
 import Block = require('../general/Block');
 import Method = require('./Method');
+import Utils = require('../Utils');
 
 interface Props {
     resource: RamlSpec.Resource;
@@ -25,12 +27,14 @@ function MethodsFactory(methods: RamlSpec.Method[], uri: string): React.ReactNod
 }
 
 function ResourceFactory(resource: RamlSpec.Resource): React.ReactNode {
-    if (!resource.description) {
-        return null;
-    }
-    return Section.Factory({title: this.props.resource.displayName || this.props.resource.absoluteUri},
+    return React.createElement('div', {className: 'rd-resource', id: Utils.stringToHtmlId(resource.absoluteUri)},
         Block.Factory({
-            left: DescriptionFactory(this.props.resource.description)
+            left: React.createElement('h1', {className: 'rd-resource-title'},
+                resource.absoluteUri
+            )
+        }),
+        Block.Factory({
+            left: DescriptionFactory(resource.description)
         })
     );
 }
