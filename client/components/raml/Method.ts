@@ -9,6 +9,7 @@ import Schema = require('./Schema');
 import Example = require('./Example');
 import Code = require('../general/Code');
 import NamedParameters = require('./NamedParameters');
+import Utils = require('../Utils');
 
 interface Props {
     method: RamlSpec.Method;
@@ -53,6 +54,12 @@ function PayloadSectionFactory(method: RamlSpec.Method): React.ReactNode {
     )
 }
 
+function ResponsesFactory(responses: RamlSpec.Responses): React.ReactNode {
+    return Block.Factory({
+        left: NamedParameters.Factory({namedParameters: responses, title: "Responses"})
+    });
+}
+
 function ResponseBodySectionFactory(responses: RamlSpec.Responses): React.ReactNode {
     var res: React.ReactNode[] = [];
     if (!responses) {
@@ -82,7 +89,11 @@ function ResponseBodySectionFactory(responses: RamlSpec.Responses): React.ReactN
 export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
-        return Section.Factory({title: this.props.method.displayName || this.props.method.method.toUpperCase()},
+        var methodString = this.props.method.method.toUpperCase();
+        return Section.Factory({
+                title: this.props.method.displayName || methodString,
+                id: Utils.urlToId(this.props.uri) + '-' + methodString
+            },
             Block.Factory({
                 left: DescriptionFactory(this.props.method.description),
                 right: Code.Factory({
@@ -95,6 +106,7 @@ export class Component extends React.Component<Props, void> {
                 left: NamedParameters.Factory({title: 'Query Parameters', namedParameters: this.props.method.queryParameters})
             }),
             PayloadSectionFactory(this.props.method),
+            ResponsesFactory(this.props.method.responses),
             ResponseBodySectionFactory(this.props.method.responses)
         );
     }

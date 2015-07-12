@@ -27,7 +27,7 @@ function MethodsFactory(methods: RamlSpec.Method[], uri: string): React.ReactNod
 }
 
 function ResourceFactory(resource: RamlSpec.Resource): React.ReactNode {
-    return React.createElement('div', {className: 'rd-resource', id: Utils.stringToHtmlId(resource.absoluteUri)},
+    return React.createElement('div', {className: 'rd-resource', id: Utils.urlToId(resource.absoluteUri)},
         Block.Factory({
             left: React.createElement('h1', {className: 'rd-resource-title'},
                 resource.absoluteUri

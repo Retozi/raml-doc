@@ -1,6 +1,4 @@
 /// <reference path="../../../typings/references.d.ts" />
-
-require('../../../node_modules/highlight.js/styles/obsidian.css');
 require('./CodeStyles.styl');
 import React = require('react');
 import hljs = require('highlight.js');

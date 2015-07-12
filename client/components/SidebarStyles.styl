@@ -1,8 +1,36 @@
 @require "vars"
 
 .rd-sidebar
-    width 300px
+    width 400px
     background $sidebar-background
     height 100%
     overflow-x hidden
     overflow-y auto
+    padding-left 8px
+
+$resource
+    display block
+    padding 4px 0
+    font-family $copy-font
+    &[data-root="true"]
+        margin-top 24px
+    &[data-beforeislast="true"]
+        margin-top: 16px
+
+.rd-sidebar-resourceLink
+    @extends $resource
+
+.rd-sidebar-resourceLinkResource
+    text-decoration none
+    color $blue
+
+
+.rd-sidebar-resourcePath
+    @extends $resource
+
+.rd-sidebar-resourceLinkMethod
+    margin-left 8px
+    font-family $code-font
+    font-size 13px
+    color $purple
+    text-decoration none

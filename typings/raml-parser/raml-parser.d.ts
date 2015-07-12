@@ -6,19 +6,19 @@ declare module 'raml-parser' {
     export function loadFile(path: string): Q.Promise<Raml>;
 
     export interface NamedParameter {
-        displayName: string;
-        description: string;
-        type: string;
-        enum: any[];
-        pattern: string;
-        minLength: number;
-        maxLength: number;
-        minimum: number;
-        maximum: number;
-        example: string;
-        repeat: boolean;
-        required: boolean;
-        default: string;
+        displayName?: string;
+        description?: string;
+        type?: string;
+        enum?: any[];
+        pattern?: string;
+        minLength?: number;
+        maxLength?: number;
+        minimum?: number;
+        maximum?: number;
+        example?: string;
+        repeat?: boolean;
+        required?: boolean;
+        default?: string;
     }
 
     export interface NamedParameters {
