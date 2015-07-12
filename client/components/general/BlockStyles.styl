@@ -1,6 +1,12 @@
 .rd-block
     display flex
 
+    @media print
+        display initial
+
 .rd-block-rightContent, .rd-block-leftContent
     width 50%
     padding 0 48px
+
+    @media print
+        width 100%

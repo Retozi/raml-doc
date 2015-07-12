@@ -18,7 +18,7 @@
     vertical-align top
 
 .rd-schema-property
-    margin-bottom 16px
+    margin 8px 0
 
 .rd-schema-propertyKey
     color $code-property-color
@@ -50,3 +50,10 @@
         color: $type-color
     &:active
         color: $type-color
+
+.rd-schema
+    position relative
+    font-size $copy-size
+    @media print
+        font-size $print-copy-size
+        page-break-inside avoid

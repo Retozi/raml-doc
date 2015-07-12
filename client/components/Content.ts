@@ -11,6 +11,14 @@ export interface Props {
     errors: RamlSpec.ValidationError[];
 }
 
+function scrollToHash() {
+    var hash = window.location.hash;
+    setTimeout(() => {
+        var elToScroll = document.getElementById(hash.slice(1, hash.length));
+        elToScroll && elToScroll.scrollIntoView(true);
+    }, 1000)
+}
+
 function DocFactory(raml: RamlSpec.Raml) {
     if (!raml) {
         return null;
@@ -23,7 +31,11 @@ function DocFactory(raml: RamlSpec.Raml) {
 }
 
 export class Component extends React.Component<Props, void> {
-
+    componentWillReceiveProps(nextProps: Props) {
+        if (!this.props.raml && nextProps.raml) {
+            scrollToHash();
+        }
+    }
     render(): React.ReactNode {
         return React.createElement('div', {className: "rd-content"},
             React.createElement('div', {className: "rd-content-wrapper"},

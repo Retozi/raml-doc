@@ -8,3 +8,6 @@
     color $secondary-text-color
     &[data-inverted="true"]
         color $inverted-text-color
+    @media print
+        @extends $no-page-break
+        font-size $print-subhead-size

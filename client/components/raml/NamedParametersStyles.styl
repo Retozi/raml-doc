@@ -2,6 +2,10 @@
 
 .rd-namedParameters
     padding 0
+    font-size $copy-size
+    @media print
+        font-size $print-copy-size
+        @extends $no-page-break
 
 .rd-namedParameters-list
     border-top 1px solid $border-color

@@ -4,6 +4,9 @@
     font-size $section-header-size
     font-weight normal
     font-family $section-header-font
+    @media print
+        font-size $print-section-header-size
+        page-break-after avoid
 
 .rd-section
     position relative

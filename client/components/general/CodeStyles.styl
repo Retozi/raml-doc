@@ -3,6 +3,10 @@
 .rd-code
     font-size $copy-size
     font-family $code-font
+    @media print {
+      border 1px solid $border-color
+      font-size: $print-copy-size
+    }
 
 /**
  * Obsidian style

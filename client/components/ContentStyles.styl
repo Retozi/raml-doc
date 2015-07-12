@@ -5,6 +5,8 @@
     flex 1 0 0
     height: 100%
     overflow: auto
+    @media print
+        height: auto
 
 .rd-content-wrapper
     position relative
@@ -16,3 +18,5 @@
     bottom 0
     right 0
     background $dark-content-background
+    @media print
+        display none
