@@ -3,6 +3,8 @@
 import React = require('react');
 import RamlSpec = require('../../server/RamlSpec');
 import Code = require('./general/Code');
+import Block = require('./general/Block');
+import Section = require('./general/Section');
 
 interface Props {
     errors: RamlSpec.ValidationError[]
@@ -15,20 +17,24 @@ function ErrorFactory(error: RamlSpec.ValidationError) {
     } catch (e) {
 
     }
-    return Code.Factory({language: 'text'},
+    return Block.Factory({
+        left: Code.Factory({language: 'text'},
         `
         ${error.url}
         ${error.method}
         ${error.status}
         ${m}
-        `
-    );
+        `)
+    });
 }
 
 export class Component extends React.Component<Props, void> {
 
     render(): React.ReactNode {
-        return React.createElement('div', {className: 'rd-errors'},
+        if (this.props.errors.length === 0) {
+            return null;
+        }
+        return Section.Factory({title: "Validation Errors"},
             this.props.errors.map((e: RamlSpec.ValidationError) => ErrorFactory(e))
         );
     }

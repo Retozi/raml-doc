@@ -103,7 +103,16 @@ export class Component extends React.Component<Props, void> {
                 )
             }),
             Block.Factory({
-                left: NamedParameters.Factory({title: 'Query Parameters', namedParameters: this.props.method.queryParameters})
+                left: NamedParameters.Factory({
+                    title: 'Request Headers',
+                    namedParameters: this.props.method.headers
+                })
+            }),
+            Block.Factory({
+                left: NamedParameters.Factory({
+                    title: 'Query Parameters',
+                    namedParameters: this.props.method.queryParameters
+                })
             }),
             PayloadSectionFactory(this.props.method),
             ResponsesFactory(this.props.method.responses),
