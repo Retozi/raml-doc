@@ -4,7 +4,6 @@ import React = require('react');
 import RamlSpec = require('../../../server/RamlSpec');
 import Section = require('../general/Section');
 import Schema = require('./Schema');
-import Subhead = require('../general/Subhead');
 import Block = require('../general/Block');
 
 interface Props {

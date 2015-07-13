@@ -23,7 +23,7 @@ function DescriptionFactory(md: string): React.ReactNode {
     return Copy.Factory({md: md});
 }
 
-function PayloadBodyFactory(body: RamlSpec.Body) {
+function PayloadBodyFactory(body: RamlSpec.Body): React.ReactNode {
     if (!body || !body['application/json']) {
         return null;
     }
@@ -41,7 +41,7 @@ function PayloadBodyFactory(body: RamlSpec.Body) {
             title: "payload example",
             example: jsonBody.parsedExample.result
         })
-    })
+    });
 }
 
 
@@ -51,7 +51,7 @@ function PayloadSectionFactory(method: RamlSpec.Method): React.ReactNode {
     }
     return SubSection.Factory(null,
        PayloadBodyFactory(method.body)
-    )
+    );
 }
 
 function ResponsesFactory(responses: RamlSpec.Responses): React.ReactNode {

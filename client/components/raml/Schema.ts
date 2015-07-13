@@ -24,7 +24,7 @@ function TypeFactory(type: string | string[]): React.ReactNode  {
     }
     var typeString: string;
     if (_.isArray(type)) {
-        typeString = (<string[]> type).join(', ')
+        typeString = (<string[]> type).join(', ');
     } else {
         typeString = <string> type;
     }
@@ -55,7 +55,7 @@ function EnumFactory(e: any[]): React.ReactNode {
     }
     return el('div', {className: 'rd-schema-enum', key: 'enum'},
         `enum: ${e.join(', ')}`
-    )
+    );
 }
 
 function PatternFactory(pattern: string): React.ReactNode {
@@ -64,7 +64,7 @@ function PatternFactory(pattern: string): React.ReactNode {
     }
     return el('div', {className: 'rd-schema-pattern', key: 'pattern'},
         `pattern: ${pattern}`
-    )
+    );
 }
 
 
@@ -82,14 +82,14 @@ function OneOfFactory(oneOf: jsonschema.SchemaNode[]): React.ReactNode {
     var res: React.ReactNode[] = [];
     oneOf.forEach((t: jsonschema.SchemaNode): void => {
         res.push(SchemaNodeFactory(t, true));
-        res.push(', ')
-    })
-    return res.slice(0, res.length -1);
+        res.push(', ');
+    });
+    return res.slice(0, res.length - 1);
 }
 
 function SchemaNodeFactory(schemaNode: jsonschema.SchemaNode, required: boolean): React.ReactNode {
-    if(schemaNode.oneOf) {
-        return OneOfFactory(schemaNode.oneOf)
+    if (schemaNode.oneOf) {
+        return OneOfFactory(schemaNode.oneOf);
     } else if (schemaNode.type === 'object') {
         return ObjectFactory(schemaNode, required);
     } else if (schemaNode.type === 'array') {

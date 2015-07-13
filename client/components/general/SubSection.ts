@@ -1,7 +1,6 @@
 /// <reference path="../../../typings/references.d.ts" />
 require('./SubSectionStyles.styl');
 import React = require('react');
-import Utils = require('../Utils');
 import Block = require('./Block');
 
 interface Props {
@@ -9,7 +8,7 @@ interface Props {
     children?: string;
 }
 
-function TitleFactory(title: string) {
+function TitleFactory(title: string): React.ReactNode {
     if (!title) {
         return null;
     }

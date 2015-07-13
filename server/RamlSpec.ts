@@ -128,9 +128,8 @@ function parseGlobalTypes(ramlObj: raml.Raml): GlobalTypes {
             var schema: Object;
             try {
                 schema = yaml.load(s[t]);
-            }
-            catch (e) {
-                throw new Error(`global Types could not b parsed, ${e.message}`)
+            } catch (e) {
+                throw new Error(`global Types could not b parsed, ${e.message}`);
             }
             JsonschemaDefaults.addDefaults(schema);
             types[t] = schema;
@@ -218,7 +217,7 @@ class RamlEnhancer {
             return;
         }
         node.resources.forEach((r: Resource) => this.enhanceResource(r, parentUrl));
-        node.resources.sort(alphabetical)
+        node.resources.sort(alphabetical);
     }
 }
 
@@ -245,7 +244,7 @@ export class RamlSpec {
         return {
             globalTypes: this.data.parsedSchemas,
             routes: this._routes
-        }
+        };
     }
 
     getMethods(path: string): Method[] {

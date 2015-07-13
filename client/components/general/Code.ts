@@ -9,23 +9,23 @@ interface Props {
 }
 
 export class Component extends React.Component<Props, void> {
-    highlightCode() {
+    highlightCode(): void {
         var domNode = React.findDOMNode(this);
         var nodes = domNode.querySelectorAll('pre code');
 
         if (nodes.length > 0) {
-            for (var i = 0; i < nodes.length; i=i+1) {
+            for (var i = 0; i < nodes.length; i = i + 1) {
                 hljs.highlightBlock(nodes[i]);
             }
         }
 
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.highlightCode();
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         this.highlightCode();
     }
 

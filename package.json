@@ -45,6 +45,7 @@
     "minimist": "^1.1.1"
   },
   "scripts": {
+    "build": "npm run build-server && npm run build-client",
     "build-client": "node runTs.js build-tools/webpackBuild.ts prod",
     "build-server": "node runTs.js build-tools/tscBuild.ts prod-server",
     "mocha": "rm -rf test-build && node runTs.js build-tools/tscBuild.ts test-server && node ./node_modules/mocha/bin/mocha",

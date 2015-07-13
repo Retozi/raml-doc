@@ -9,16 +9,16 @@ export interface Props {
 
 var LEVEL_PADDING = 20;
 
-function ResourcePathFactory(p: ResourceItemProps) {
+function ResourcePathFactory(p: ResourceItemProps): React.ReactNode {
     return React.createElement('div', {
         key: p.absUri,
         className: 'rd-sidebar-resourcePath',
         'data-root': p.level === 0,
         style: {paddingLeft: p.level * LEVEL_PADDING}
-    }, p.relUri)
+    }, p.relUri);
 }
 
-function ResourceLinkFactory(p: ResourceItemProps) {
+function ResourceLinkFactory(p: ResourceItemProps): React.ReactNode {
     var urlId = '#' + Utils.urlToId(p.absUri);
     return React.createElement('div', {
             className: 'rd-sidebar-resourceLink',
@@ -31,7 +31,7 @@ function ResourceLinkFactory(p: ResourceItemProps) {
                 key: p.absUri,
                 href: urlId
             }, p.relUri),
-            p.methods.map((m) => {
+            p.methods.map((m: RamlSpec.Method) => {
                 return React.createElement('a', {
                     className: 'rd-sidebar-resourceLinkMethod',
                     href: urlId + '-' + m.method
@@ -48,7 +48,7 @@ interface ResourceItemProps {
     beforeIsLast: boolean;
 }
 
-function ResourcesLinksFactory(raml: RamlSpec.Raml) {
+function ResourcesLinksFactory(raml: RamlSpec.Raml): React.ReactNode {
     if (!raml || !raml.resources) {
         return null;
     }
@@ -56,17 +56,17 @@ function ResourcesLinksFactory(raml: RamlSpec.Raml) {
 
     function walk(resources: RamlSpec.Resource[], level: number): void {
         resources.forEach((r: RamlSpec.Resource, i: number) => {
-            var lastEl = <React.ReactElement<any>> res[res.length -1];
+            var lastEl = <React.ReactElement<any>> res[res.length - 1];
 
             var props: ResourceItemProps = {
                 absUri: r.absoluteUri,
                 relUri: r.relativeUri,
                 level: level,
                 methods: r.methods || [],
-                beforeIsLast: (lastEl) ? lastEl.props.style.paddingLeft > level * LEVEL_PADDING: false
+                beforeIsLast: (lastEl) ? lastEl.props.style.paddingLeft > level * LEVEL_PADDING : false
             };
             if (!r.description && ! r.methods) {
-                res.push(ResourcePathFactory(props))
+                res.push(ResourcePathFactory(props));
             } else {
                 res.push(ResourceLinkFactory(props));
             }

@@ -2,7 +2,6 @@
 require('./ResourceStyles.styl');
 import React = require('react');
 import RamlSpec = require('../../../server/RamlSpec');
-import Section = require('../general/Section');
 import Copy = require('../general/Copy');
 import Block = require('../general/Block');
 import Method = require('./Method');

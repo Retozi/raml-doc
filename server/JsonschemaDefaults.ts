@@ -5,13 +5,13 @@ export function addDefaults(schema: Object): void {
     parseNode(schema);
 }
 
-function checkRef(node: any) {
+function checkRef(node: any): void {
     if (node.$ref && node.$ref[0] !== "#") {
         throw new Error(`$ref ${node.$ref}, a ref must always start with '#'`);
     }
 }
 
-function checkNull(node: any) {
+function checkNull(node: any): void {
     if (node === null) {
         throw new Error("do not use null, but use a string that says 'null'");
     }
@@ -40,7 +40,7 @@ function parseNode(node: any): any {
         return;
     }
 
-    checkNull(node)
+    checkNull(node);
 
     return;
 }

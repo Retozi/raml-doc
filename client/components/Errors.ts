@@ -7,15 +7,15 @@ import Block = require('./general/Block');
 import Section = require('./general/Section');
 
 interface Props {
-    errors: RamlSpec.ValidationError[]
+    errors: RamlSpec.ValidationError[];
 }
 
-function ErrorFactory(error: RamlSpec.ValidationError) {
+function ErrorFactory(error: RamlSpec.ValidationError): React.ReactNode {
     var m = error.message;
     try {
-        m = JSON.stringify(JSON.parse(m), null, 2)
+        m = JSON.stringify(JSON.parse(m), null, 2);
     } catch (e) {
-
+        /* simply do nothing, as m is a string */
     }
     return Block.Factory({
         left: Code.Factory({language: 'text'},

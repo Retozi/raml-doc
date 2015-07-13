@@ -11,15 +11,17 @@ export interface Props {
     errors: RamlSpec.ValidationError[];
 }
 
-function scrollToHash() {
+function scrollToHash(): void {
     var hash = window.location.hash;
     setTimeout(() => {
         var elToScroll = document.getElementById(hash.slice(1, hash.length));
-        elToScroll && elToScroll.scrollIntoView(true);
-    }, 1000)
+        if (elToScroll) {
+            elToScroll.scrollIntoView(true);
+        }
+    }, 1000);
 }
 
-function DocFactory(raml: RamlSpec.Raml) {
+function DocFactory(raml: RamlSpec.Raml): React.ReactNode {
     if (!raml) {
         return null;
     }
@@ -27,11 +29,11 @@ function DocFactory(raml: RamlSpec.Raml) {
         Documentation.Factory({documentation: raml.documentation}),
         GlobalSchemas.Factory({parsedSchemas: raml.parsedSchemas}),
         Resources.Factory({resources: raml.resources})
-    ]
+    ];
 }
 
 export class Component extends React.Component<Props, void> {
-    componentWillReceiveProps(nextProps: Props) {
+    componentWillReceiveProps(nextProps: Props): void {
         if (!this.props.raml && nextProps.raml) {
             scrollToHash();
         }
