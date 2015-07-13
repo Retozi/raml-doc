@@ -103,6 +103,7 @@ function parseArray(array, defs) {
         items: parseNode(array[0], defs)
     };
 }
+exports.parseArray = parseArray;
 function parse(source, defs) {
     if (_.isArray(source) || _.isObject(source)) {
         return parseNode(source, defs);
@@ -110,4 +111,7 @@ function parse(source, defs) {
     throw new Error('source must be Array or Object');
 }
 exports.parse = parse;
+<<<<<<< HEAD:build/TerseJsonschema.js
 //# sourceMappingURL=TerseJsonschema.js.map
+=======
+>>>>>>> new_client:build/TerseJsonschema.js

@@ -38,10 +38,10 @@ class ExpressServer {
         var server = express();
 
         server.use(express.static(path.join(__dirname)));
-        server.get('/', function(req, res) {
+        server.get('/', function(req: any, res: any): void {
             res.send(devHtml(port));
         });
-    
+
         this.server = server.listen(port);
     }
 }
@@ -56,11 +56,11 @@ export class Server {
     server: ExpressServer;
     io: SocketIO.Server;
     port: number;
- 
+
     constructor(options: Options) {
         this.options = options;
     }
-    
+
     listen(port: number): void {
         this.port = port;
         this.server = new ExpressServer(this.port);
@@ -79,9 +79,9 @@ export class Server {
 
     private writeBundle(data: RamlSpec.Raml): void {
         if (this.options.bundle) {
-            fs.writeFile(this.options.bundle, bundleHtml(data), function(err) {
+            fs.writeFile(this.options.bundle, bundleHtml(data), function(err: Error): void {
                 if (err) {
-                    console.log(err);
+                    console.error(err);
                 }
             });
         }

@@ -1,0 +1,15 @@
+@require "vars"
+
+.rd-section-title
+    font-size $section-header-size
+    font-weight normal
+    font-family $section-header-font
+    @media print
+        font-size $print-section-header-size
+        page-break-after avoid
+
+.rd-section
+    position relative
+    //border-bottom 1px solid $border-color
+    padding 24px 0
+    width 100%

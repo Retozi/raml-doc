@@ -1,0 +1,13 @@
+@require "vars"
+
+.rd-subhead
+    font-size $subhead-size
+    font-weight 600
+    font-family $copy-font
+    text-transform uppercase
+    color $secondary-text-color
+    &[data-inverted="true"]
+        color $inverted-text-color
+    @media print
+        @extends $no-page-break
+        font-size $print-subhead-size

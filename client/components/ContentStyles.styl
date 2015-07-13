@@ -1,0 +1,22 @@
+@require "vars"
+
+.rd-content
+    position relative
+    flex 1 0 0
+    height: 100%
+    overflow: auto
+    @media print
+        height: auto
+
+.rd-content-wrapper
+    position relative
+
+.rd-content-blackBackground
+    position absolute
+    width 50%
+    top 0
+    bottom 0
+    right 0
+    background $dark-content-background
+    @media print
+        display none

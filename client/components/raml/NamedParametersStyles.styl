@@ -1,0 +1,38 @@
+@require "vars"
+
+.rd-namedParameters
+    padding 0
+    font-size $copy-size
+    @media print
+        font-size $print-copy-size
+        @extends $no-page-break
+
+.rd-namedParameters-list
+    border-top 1px solid $border-color
+    list-style none
+    padding 0
+
+.rd-namedParameters-item
+    display flex
+    padding 12px 0
+    border-bottom 1px solid lighten($border-color, 50%)
+
+.rd-namedParameters-name
+    font-family $copy-font
+    text-align right
+
+.rd-namedParameters-type
+    font-family $code-font
+    color $type-color
+    text-align right
+
+.rd-namedParameters-desc
+    font-family $copy-font
+    color $secondary-text-color = rgba(0, 0, 0, 0.54)
+
+.rd-namedParameters-leftContainer
+    width 20%
+
+.rd-namedParameters-rightContainer
+    width 80%
+    padding-left 24px

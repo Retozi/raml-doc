@@ -1,0 +1,59 @@
+@require "vars"
+
+.rd-schema-object
+    display inline-block
+    vertical-align top
+
+.rd-schema-array
+    display inline-block
+    vertical-align top
+
+.rd-schema-description
+    color $secondary-text-color
+    max-width 350px
+    white-space normal
+
+.rd-schema-properties
+    display inline-block
+    vertical-align top
+
+.rd-schema-property
+    margin 8px 0
+
+.rd-schema-propertyKey
+    color $code-property-color
+
+.rd-schema-type
+    color $type-color
+
+.rd-schema-primitive
+    display inline-block
+    vertical-align top
+
+.rd-schema-definition
+    overflow-x auto
+    font-family $code-font
+    background $code-background
+    color $regular-text-color
+    padding 8px 10px
+    border 1px solid $border-color
+
+.rd-schema-optional
+    font-size 12px
+
+.rd-schema-ref
+    &:link
+        color: $type-color
+    &:visited
+        color: $type-color
+    &:hover
+        color: $type-color
+    &:active
+        color: $type-color
+
+.rd-schema
+    position relative
+    font-size $copy-size
+    @media print
+        font-size $print-copy-size
+        page-break-inside avoid

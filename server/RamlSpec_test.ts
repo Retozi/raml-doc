@@ -8,9 +8,9 @@ var FILE = './fixture/api.raml';
 
 describe('RamlSpec', function(): void {
     var s: RamlSpec.RamlSpec;
-    it('should fetch async', function(done): void {
+    it('should fetch async', function(done: Function): void {
         RamlSpec.loadAsync(FILE)
-            .then(function(data: RamlSpec.RamlSpec) {
+            .then(function(data: RamlSpec.RamlSpec): void {
                 s = data;
                 expect(data.getData().version).to.equal('1');
                 done();
@@ -22,7 +22,7 @@ describe('RamlSpec', function(): void {
     });
 
     it('returns routes', function(): void {
-        expect(s.getRoutes().length).to.equal(3);
+        expect(s.getSchemaData().routes.length).to.equal(3);
     });
 
     it('should get Methods', function(): void {
@@ -64,9 +64,9 @@ describe('RamlSpec', function(): void {
         expect(s.extractResponseJsonBody('test2', 'post', '200')).to.eql(empty);
     });
 
-    it('works without global types', function(done): void {
+    it('works without global types', function(done: Function): void {
         RamlSpec.loadAsync('./fixture/no-global-types.raml')
-            .then(function(obj) {
+            .then(function(obj: RamlSpec.RamlSpec): void {
                 var m = obj.getMethod('test', 'post');
                 expect(m).be.instanceOf(Object);
                 done();
@@ -77,54 +77,51 @@ describe('RamlSpec', function(): void {
 
 
 describe('ParseErrors', function(): void {
-    it('should parse a json errorr', function(): void {
+    it('should parse a json error', function(): void {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
         body.parsedExample = new RamlSpec.ParsedExample('{"hello": "world}');
         errors.registerErrors('url', 'method', 'status', body);
         expect(errors.errors[0].message).to.equal("json parsing error: Unexpected end of input");
 
-    })
+    });
 
-    it('should parse a cson error', function(): void {
+    it('should parse invalid yaml schema error', function(): void {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
         body.parsedExample = new RamlSpec.ParsedSchema(
             "key: 'string"
         );
         errors.registerErrors('url', 'method', 'status', body);
-        expect(errors.errors[0].message).to.equal("cson parsing error: missing '");
+        expect(errors.errors[0].message).to.contain("yaml parsing error:");
 
-    })
-
-    it('should parse a terseJsonschema error', function(): void {
-        var errors = new RamlSpec.ParseErrors();
-        var body = RamlSpec.emptyJsonBody();
-        body.parsedSchema = new RamlSpec.ParsedSchema("key: 'stri'");
-        errors.registerErrors('url', 'method', 'status', body);
-        expect(errors.errors[0].message).to.equal("terseJson parsing error: Type is not defined: stri");
-
-    })
+    });
 
     it('should parse a validation error', function(): void {
         var errors = new RamlSpec.ParseErrors();
         var body = RamlSpec.emptyJsonBody();
-        body.parsedSchema = new RamlSpec.ParsedSchema("key: 'string'");
-        body.parsedExample = new RamlSpec.ParsedExample('{"key": 1}');
+        body.parsedSchema = new RamlSpec.ParsedSchema(`
+            type: object
+            properties:
+                key:
+                    type: 'number'
+        `);
+        body.parsedExample = new RamlSpec.ParsedExample('{"key": "test"}');
         errors.registerErrors('url', 'method', 'status', body);
         expect(errors.errors[0].message).to.equal("data.key: is the wrong type");
 
-    })
+    });
 });
 
+
 describe('Validator', function(): void {
-    it('should validate a schema', function(done) {
+    it('should validate a schema', function(done: Function): void {
         RamlSpec.loadAsync(FILE)
-            .then(function(data: RamlSpec.RamlSpec) {
+            .then(function(data: RamlSpec.RamlSpec): void {
                 var validator = new RamlSpec.Validator(data);
                 var errors = validator.validate();
                 expect(errors.length).to.equal(0);
                 done();
             }).done();
-    })
-})
+    });
+});

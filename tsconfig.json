@@ -3,14 +3,6 @@
 		"target": "ES5",
 		"module": "commonjs",
 		"sourceMap": true,
-		"noImplicitAny": true,
-        "outDir": "./build"
-	},
-    "files": [
-        "server/RamlSpec",
-        "server/RamlSpec_test",
-        "server/TerseJsonschema",
-        "server/TerseJsonschema_test",
-        "server/Server"
-    ]
+		"noImplicitAny": true
+	}
 }
